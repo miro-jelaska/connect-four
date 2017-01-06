@@ -2,7 +2,13 @@
     "compilerOptions": {
         "module": "commonjs",
         "target": "es5",
-        "noImplicitAny": false,
-        "sourceMap": false
-    }
+        "noImplicitAny": true,
+        "sourceMap": false,
+        "typeRoots": [
+          "./node_modules/@types/"
+        ]
+    },
+    "files": [
+      "./app/scripts/main.ts"
+    ]
 }

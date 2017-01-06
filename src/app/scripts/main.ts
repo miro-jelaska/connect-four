@@ -1,7 +1,5 @@
-function add(a: number, b: number): number {
-    return a + b;
-}
+import 'pixi.js';
 
 (function () {
-    console.log(add(5, 6));
+    console.log(PIXI);
 })();

@@ -4,15 +4,15 @@
   "description": "Connect Four game created using TypeScript and PixiJS",
   "main": "index.html",
   "scripts": {
-    "gulp": "./node_modules/.bin/gulp"
+    "webpack": "webpack"
   },
   "author": "Miroslav Jelaska",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^6.0.55",
-    "gulp": "^3.9.1",
-    "gulp-typescript": "^3.1.3",
-    "gulp-util": "^3.0.8",
-    "typescript": "^2.1.4"
+    "@types/pixi.js": "^4.3.1",
+    "ts-loader": "^1.3.3",
+    "typescript": "^2.1.4",
+    "webpack": "^1.14.0"
   }
 }
