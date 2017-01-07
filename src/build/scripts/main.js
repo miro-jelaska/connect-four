@@ -46,9 +46,28 @@
 
 	"use strict";
 	__webpack_require__(1);
-	(function () {
-	    console.log(PIXI);
-	})();
+	var GameBoard_1 = __webpack_require__(179);
+	var ScoreBoard_1 = __webpack_require__(180);
+	function onLoad() {
+	    var imageName = "./app/images/coin-red.png";
+	    var renderer = PIXI.autoDetectRenderer(300, 300);
+	    console.log(renderer.view);
+	    document.body.appendChild(renderer.view);
+	    PIXI.loader
+	        .add(imageName)
+	        .load(setup);
+	    function setup() {
+	        gameLoop();
+	    }
+	    function gameLoop() {
+	        requestAnimationFrame(gameLoop);
+	        var rootStage = new PIXI.Container();
+	        rootStage.addChild((new GameBoard_1.GameBoard()).getStage());
+	        rootStage.addChild((new ScoreBoard_1.ScoreBoard()).getStage());
+	        renderer.render(rootStage);
+	    }
+	}
+	window.onload = function () { return onLoad(); };
 
 
 /***/ },
@@ -37752,6 +37771,73 @@
 	  _touchDown: false
 	};
 	//# sourceMappingURL=interactiveTarget.js.map
+
+/***/ },
+/* 179 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	__webpack_require__(1);
+	var GameBoard = (function () {
+	    function GameBoard() {
+	        this.toggle = false;
+	    }
+	    GameBoard.prototype.getStage = function () {
+	        var _this = this;
+	        var stage = new PIXI.Container();
+	        var coin = new PIXI.Sprite(PIXI.loader.resources["./app/images/coin-red.png"].texture);
+	        coin.anchor.x = 0.5;
+	        coin.anchor.y = 0.5;
+	        coin.position.set(150, 150);
+	        coin.interactive = true;
+	        coin.on("mousedown", function () {
+	            console.log('mousedown');
+	            _this.toggle = !_this.toggle;
+	            if (_this.toggle)
+	                coin.scale.set(3, 3);
+	            else
+	                coin.scale.set(1, 1);
+	        });
+	        stage.addChild(coin);
+	        return stage;
+	    };
+	    return GameBoard;
+	}());
+	exports.GameBoard = GameBoard;
+
+
+/***/ },
+/* 180 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	__webpack_require__(1);
+	var ScoreBoard = (function () {
+	    function ScoreBoard() {
+	    }
+	    ScoreBoard.prototype.getStage = function () {
+	        console.log('ScoreBoard::getStage');
+	        var stage = new PIXI.Container();
+	        var graphics = new PIXI.Graphics();
+	        graphics.beginFill(0xBEDB39, 0.01);
+	        graphics.drawRect(0, 0, 50, 50);
+	        graphics.endFill();
+	        graphics.interactive = true;
+	        graphics.on("mouseover", function () {
+	            console.log('success');
+	            graphics.scale.set(2, 2);
+	        });
+	        graphics.on("mouseout", function () {
+	            console.log('out');
+	            graphics.scale.set(1, 1);
+	        });
+	        stage.addChild(graphics);
+	        return stage;
+	    };
+	    return ScoreBoard;
+	}());
+	exports.ScoreBoard = ScoreBoard;
+
 
 /***/ }
 /******/ ]);
