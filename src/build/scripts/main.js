@@ -47,23 +47,37 @@
 	"use strict";
 	__webpack_require__(1);
 	var GameBoard_1 = __webpack_require__(179);
-	var ScoreBoard_1 = __webpack_require__(180);
+	var ScoreBoard_1 = __webpack_require__(182);
+	var Settings_1 = __webpack_require__(181);
 	function onLoad() {
 	    var imageName = "./app/images/coin-red.png";
-	    var renderer = PIXI.autoDetectRenderer(300, 300);
-	    console.log(renderer.view);
+	    var renderer = PIXI.autoDetectRenderer(Settings_1.Setting.CANVAS_WIDTH, Settings_1.Setting.CANVAS_HEIGHT, { antialias: true, transparent: true, resolution: 1 });
 	    document.body.appendChild(renderer.view);
 	    PIXI.loader
 	        .add(imageName)
 	        .load(setup);
+	    var tmpCoin;
 	    function setup() {
+	        tmpCoin = new PIXI.Sprite(PIXI.loader.resources["./app/images/coin-red.png"].texture);
+	        tmpCoin.position.set(10, -30);
+	        tmpCoin.width = 50;
+	        tmpCoin.height = 50;
 	        gameLoop();
 	    }
 	    function gameLoop() {
 	        requestAnimationFrame(gameLoop);
+	        tmpCoin.position.y = tmpCoin.position.y + 5;
+	        render();
+	    }
+	    function render() {
 	        var rootStage = new PIXI.Container();
-	        rootStage.addChild((new GameBoard_1.GameBoard()).getStage());
-	        rootStage.addChild((new ScoreBoard_1.ScoreBoard()).getStage());
+	        rootStage.addChild(tmpCoin);
+	        [
+	            new GameBoard_1.GameBoard(),
+	            new ScoreBoard_1.ScoreBoard()
+	        ]
+	            .map(function (element) { return element.getStage(); })
+	            .forEach(function (stage) { return rootStage.addChild(stage); });
 	        renderer.render(rootStage);
 	    }
 	}
@@ -37778,36 +37792,93 @@
 
 	"use strict";
 	__webpack_require__(1);
+	var ColorScheme_1 = __webpack_require__(180);
+	var Settings_1 = __webpack_require__(181);
 	var GameBoard = (function () {
 	    function GameBoard() {
-	        this.toggle = false;
 	    }
+	    Object.defineProperty(GameBoard.prototype, "coinTexture", {
+	        get: function () {
+	            return PIXI.loader.resources["./app/images/coin-red.png"].texture;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
 	    GameBoard.prototype.getStage = function () {
-	        var _this = this;
 	        var stage = new PIXI.Container();
-	        var coin = new PIXI.Sprite(PIXI.loader.resources["./app/images/coin-red.png"].texture);
-	        coin.anchor.x = 0.5;
-	        coin.anchor.y = 0.5;
-	        coin.position.set(150, 150);
-	        coin.interactive = true;
-	        coin.on("mousedown", function () {
-	            console.log('mousedown');
-	            _this.toggle = !_this.toggle;
-	            if (_this.toggle)
-	                coin.scale.set(3, 3);
-	            else
-	                coin.scale.set(1, 1);
-	        });
-	        stage.addChild(coin);
+	        this.getBoardGrid(stage);
+	        /*for (var row = 0;row < GameBoard.ROWxCOLUMN[0]; row++)
+	            for (var column = 0; column < GameBoard.ROWxCOLUMN[1]; column++)*/
+	        stage.addChild(this.getCoin(4, 5));
 	        return stage;
+	    };
+	    GameBoard.prototype.getBoardGrid = function (stage) {
+	        var grid = new PIXI.Graphics();
+	        grid.beginFill(ColorScheme_1.ColorScheme.Brown, 1);
+	        //grid.drawRect(0, GameBoard.BOARD_MARGIN_TOP, GameBoard.BOARD_WIDTH, GameBoard.BOARD_HEIGHT);
+	        grid.drawRect(0, 0, 500, 500);
+	        grid.endFill();
+	        stage.addChild(grid);
+	        var circle = new PIXI.Graphics();
+	        circle.beginFill(0xffffff, 1);
+	        circle.drawCircle(35, 40, 25);
+	        circle.drawRect(0, 10, 70, 70);
+	        circle.endFill();
+	        stage.addChild(circle);
+	        grid.mask = circle;
+	    };
+	    GameBoard.prototype.getCoin = function (row, column) {
+	        var coin = new PIXI.Sprite(this.coinTexture);
+	        coin.width = GameBoard.COIN_DIAMETER;
+	        coin.height = GameBoard.COIN_DIAMETER;
+	        coin.position.set(GameBoard.BOARD_PADDING + row * (GameBoard.COIN_DIAMETER + GameBoard.COIN_MARGIN), GameBoard.BOARD_MARGIN_TOP + GameBoard.BOARD_PADDING + column * (GameBoard.COIN_DIAMETER + GameBoard.COIN_MARGIN));
+	        return coin;
 	    };
 	    return GameBoard;
 	}());
+	GameBoard.ROWxCOLUMN = [7, 6];
+	GameBoard.COIN_MARGIN = 10;
+	GameBoard.COIN_DIAMETER = 50;
+	GameBoard.BOARD_PADDING = 15;
+	GameBoard.BOARD_WIDTH = Settings_1.Setting.CANVAS_WIDTH;
+	GameBoard.BOARD_HEIGHT = 385;
+	GameBoard.BOARD_MARGIN_TOP = 50;
 	exports.GameBoard = GameBoard;
 
 
 /***/ },
 /* 180 */
+/***/ function(module, exports) {
+
+	"use strict";
+	var ColorScheme;
+	(function (ColorScheme) {
+	    ColorScheme[ColorScheme["LightRed"] = 16669740] = "LightRed";
+	    ColorScheme[ColorScheme["DarkRed"] = 14693149] = "DarkRed";
+	    ColorScheme[ColorScheme["LightBlue"] = 4045539] = "LightBlue";
+	    ColorScheme[ColorScheme["DarkBlue"] = 886729] = "DarkBlue";
+	    ColorScheme[ColorScheme["Brown"] = 7628634] = "Brown";
+	    ColorScheme[ColorScheme["Yellow"] = 16756756] = "Yellow";
+	})(ColorScheme = exports.ColorScheme || (exports.ColorScheme = {}));
+
+
+/***/ },
+/* 181 */
+/***/ function(module, exports) {
+
+	"use strict";
+	var Setting = (function () {
+	    function Setting() {
+	    }
+	    return Setting;
+	}());
+	Setting.CANVAS_WIDTH = 440;
+	Setting.CANVAS_HEIGHT = 700;
+	exports.Setting = Setting;
+
+
+/***/ },
+/* 182 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -37816,7 +37887,6 @@
 	    function ScoreBoard() {
 	    }
 	    ScoreBoard.prototype.getStage = function () {
-	        console.log('ScoreBoard::getStage');
 	        var stage = new PIXI.Container();
 	        var graphics = new PIXI.Graphics();
 	        graphics.beginFill(0xBEDB39, 0.01);
