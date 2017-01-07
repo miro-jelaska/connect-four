@@ -50,23 +50,29 @@
 	var ScoreBoard_1 = __webpack_require__(182);
 	var Settings_1 = __webpack_require__(181);
 	function onLoad() {
-	    var imageName = "./app/images/coin-red.png";
 	    var renderer = PIXI.autoDetectRenderer(Settings_1.Setting.CANVAS_WIDTH, Settings_1.Setting.CANVAS_HEIGHT, { antialias: true, transparent: true, resolution: 1 });
 	    document.body.appendChild(renderer.view);
 	    PIXI.loader
-	        .add(imageName)
+	        .add([
+	        "./app/images/board.png",
+	        "./app/images/coin-red.png",
+	        "./app/images/coin-blue.png",
+	        "./app/images/pointer-blue.png",
+	        "./app/images/pointer-red.png",
+	    ])
 	        .load(setup);
 	    var tmpCoin;
 	    function setup() {
 	        tmpCoin = new PIXI.Sprite(PIXI.loader.resources["./app/images/coin-red.png"].texture);
-	        tmpCoin.position.set(10, -30);
-	        tmpCoin.width = 50;
-	        tmpCoin.height = 50;
+	        tmpCoin.anchor.x = 0.5;
+	        tmpCoin.anchor.y = 0.5;
+	        tmpCoin.width = 60;
+	        tmpCoin.height = 60;
+	        tmpCoin.position.set(GameBoard_1.GameBoard.getCenter(2, 0).x, GameBoard_1.GameBoard.getCenter(2, 4).y);
 	        gameLoop();
 	    }
 	    function gameLoop() {
 	        requestAnimationFrame(gameLoop);
-	        tmpCoin.position.y = tmpCoin.position.y + 5;
 	        render();
 	    }
 	    function render() {
@@ -37792,77 +37798,54 @@
 
 	"use strict";
 	__webpack_require__(1);
-	var ColorScheme_1 = __webpack_require__(180);
-	var Settings_1 = __webpack_require__(181);
 	var GameBoard = (function () {
 	    function GameBoard() {
 	    }
-	    Object.defineProperty(GameBoard.prototype, "coinTexture", {
+	    Object.defineProperty(GameBoard.prototype, "boardSprite", {
 	        get: function () {
-	            return PIXI.loader.resources["./app/images/coin-red.png"].texture;
+	            if (this._boardSprite)
+	                return this._boardSprite;
+	            var texture = PIXI.loader.resources["./app/images/board.png"].texture;
+	            var sprite = new PIXI.Sprite(texture);
+	            sprite.width = GameBoard.BOARD_WIDTH;
+	            sprite.height = GameBoard.BOARD_HEIGHT;
+	            sprite.position.y = GameBoard.BOARD_MARGIN_TOP;
+	            this._boardSprite = sprite;
+	            return sprite;
 	        },
 	        enumerable: true,
 	        configurable: true
 	    });
 	    GameBoard.prototype.getStage = function () {
 	        var stage = new PIXI.Container();
-	        this.getBoardGrid(stage);
-	        /*for (var row = 0;row < GameBoard.ROWxCOLUMN[0]; row++)
-	            for (var column = 0; column < GameBoard.ROWxCOLUMN[1]; column++)*/
-	        stage.addChild(this.getCoin(4, 5));
+	        stage.addChild(this.boardSprite);
 	        return stage;
 	    };
-	    GameBoard.prototype.getBoardGrid = function (stage) {
-	        var grid = new PIXI.Graphics();
-	        grid.beginFill(ColorScheme_1.ColorScheme.Brown, 1);
-	        //grid.drawRect(0, GameBoard.BOARD_MARGIN_TOP, GameBoard.BOARD_WIDTH, GameBoard.BOARD_HEIGHT);
-	        grid.drawRect(0, 0, 500, 500);
-	        grid.endFill();
-	        stage.addChild(grid);
-	        var circle = new PIXI.Graphics();
-	        circle.beginFill(0xffffff, 1);
-	        circle.drawCircle(35, 40, 25);
-	        circle.drawRect(0, 10, 70, 70);
-	        circle.endFill();
-	        stage.addChild(circle);
-	        grid.mask = circle;
-	    };
-	    GameBoard.prototype.getCoin = function (row, column) {
-	        var coin = new PIXI.Sprite(this.coinTexture);
-	        coin.width = GameBoard.COIN_DIAMETER;
-	        coin.height = GameBoard.COIN_DIAMETER;
-	        coin.position.set(GameBoard.BOARD_PADDING + row * (GameBoard.COIN_DIAMETER + GameBoard.COIN_MARGIN), GameBoard.BOARD_MARGIN_TOP + GameBoard.BOARD_PADDING + column * (GameBoard.COIN_DIAMETER + GameBoard.COIN_MARGIN));
-	        return coin;
+	    GameBoard.getCenter = function (row, column) {
+	        // The bottom row has index of 0
+	        var x = GameBoard.BOARD_PADDING
+	            + GameBoard.COIN_DIAMETER / 2
+	            + row * (GameBoard.COIN_MARGIN + GameBoard.COIN_DIAMETER);
+	        var y = GameBoard.BOARD_MARGIN_TOP
+	            + GameBoard.BOARD_PADDING
+	            + GameBoard.COIN_DIAMETER / 2
+	            + (GameBoard.ROWxCOLUMN[1] - column) * (GameBoard.COIN_DIAMETER + GameBoard.COIN_MARGIN);
+	        return new PIXI.Point(x, y);
 	    };
 	    return GameBoard;
 	}());
-	GameBoard.ROWxCOLUMN = [7, 6];
-	GameBoard.COIN_MARGIN = 10;
-	GameBoard.COIN_DIAMETER = 50;
-	GameBoard.BOARD_PADDING = 15;
-	GameBoard.BOARD_WIDTH = Settings_1.Setting.CANVAS_WIDTH;
-	GameBoard.BOARD_HEIGHT = 385;
+	GameBoard.ROWxCOLUMN = [6, 7];
+	GameBoard.COIN_MARGIN = 20;
+	GameBoard.COIN_DIAMETER = 60;
+	GameBoard.BOARD_PADDING = 20;
+	GameBoard.BOARD_WIDTH = 580;
+	GameBoard.BOARD_HEIGHT = 500;
 	GameBoard.BOARD_MARGIN_TOP = 50;
 	exports.GameBoard = GameBoard;
 
 
 /***/ },
-/* 180 */
-/***/ function(module, exports) {
-
-	"use strict";
-	var ColorScheme;
-	(function (ColorScheme) {
-	    ColorScheme[ColorScheme["LightRed"] = 16669740] = "LightRed";
-	    ColorScheme[ColorScheme["DarkRed"] = 14693149] = "DarkRed";
-	    ColorScheme[ColorScheme["LightBlue"] = 4045539] = "LightBlue";
-	    ColorScheme[ColorScheme["DarkBlue"] = 886729] = "DarkBlue";
-	    ColorScheme[ColorScheme["Brown"] = 7628634] = "Brown";
-	    ColorScheme[ColorScheme["Yellow"] = 16756756] = "Yellow";
-	})(ColorScheme = exports.ColorScheme || (exports.ColorScheme = {}));
-
-
-/***/ },
+/* 180 */,
 /* 181 */
 /***/ function(module, exports) {
 
@@ -37872,7 +37855,7 @@
 	    }
 	    return Setting;
 	}());
-	Setting.CANVAS_WIDTH = 440;
+	Setting.CANVAS_WIDTH = 580;
 	Setting.CANVAS_HEIGHT = 700;
 	exports.Setting = Setting;
 

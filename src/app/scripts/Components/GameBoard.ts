@@ -1,62 +1,54 @@
 import 'pixi.js';
 import {RenderableElement} from "../Utilities/RenderableElement";
 import Texture = PIXI.Texture;
-import {ColorScheme} from "../Utilities/ColorScheme";
-import {Setting} from "../Settings";
 import DisplayObject = PIXI.DisplayObject;
 import Container = PIXI.Container;
+import Graphics = PIXI.Graphics;
 
 
 export class GameBoard implements RenderableElement{
-    public static readonly ROWxCOLUMN:[number, number] = [7, 6];
-    public static readonly COIN_MARGIN = 10;
-    public static readonly COIN_DIAMETER = 50;
-    public static readonly BOARD_PADDING = 15;
-    public static readonly BOARD_WIDTH = Setting.CANVAS_WIDTH;
-    public static readonly BOARD_HEIGHT = 385;
+    public static readonly ROWxCOLUMN:[number, number] = [6, 7];
+    public static readonly COIN_MARGIN = 20;
+    public static readonly COIN_DIAMETER = 60;
+    public static readonly BOARD_PADDING = 20;
+    public static readonly BOARD_WIDTH = 580;
+    public static readonly BOARD_HEIGHT = 500;
     public static readonly BOARD_MARGIN_TOP = 50;
 
-    private get coinTexture(): Texture {
-        return PIXI.loader.resources["./app/images/coin-red.png"].texture;
+    private _boardSprite:PIXI.Sprite;
+    private get boardSprite(): PIXI.Sprite {
+        if(this._boardSprite)
+            return this._boardSprite;
+
+        let texture = PIXI.loader.resources["./app/images/board.png"].texture;
+        let sprite = new PIXI.Sprite(texture);
+        sprite.width = GameBoard.BOARD_WIDTH;
+        sprite.height = GameBoard.BOARD_HEIGHT;
+        sprite.position.y = GameBoard.BOARD_MARGIN_TOP;
+
+        this._boardSprite = sprite;
+        return sprite;
     }
 
 
     public getStage():PIXI.Container{
         let stage = new PIXI.Container();
-        this.getBoardGrid(stage);
-
-        /*for (var row = 0;row < GameBoard.ROWxCOLUMN[0]; row++)
-            for (var column = 0; column < GameBoard.ROWxCOLUMN[1]; column++)*/
-
-        stage.addChild(this.getCoin(4, 5));
+        stage.addChild(this.boardSprite);
         return stage;
     }
-    private getBoardGrid(stage:Container) {
 
-        let grid = new PIXI.Graphics();
-        grid.beginFill(ColorScheme.Brown, 1);
-        //grid.drawRect(0, GameBoard.BOARD_MARGIN_TOP, GameBoard.BOARD_WIDTH, GameBoard.BOARD_HEIGHT);
-        grid.drawRect(0, 0, 500, 500);
-        grid.endFill();
-        stage.addChild(grid);
+    public static getCenter(row: number, column: number): PIXI.Point{
+        // The bottom row has index of 0
+        let x =
+            GameBoard.BOARD_PADDING
+            + GameBoard.COIN_DIAMETER/2
+            + row * (GameBoard.COIN_MARGIN + GameBoard.COIN_DIAMETER);
+        let y =
+            GameBoard.BOARD_MARGIN_TOP
+            + GameBoard.BOARD_PADDING
+            + GameBoard.COIN_DIAMETER/2
+            + (GameBoard.ROWxCOLUMN[1] - column)*(GameBoard.COIN_DIAMETER + GameBoard.COIN_MARGIN);
 
-        let circle = new PIXI.Graphics();
-        circle.beginFill(0xffffff, 1);
-        circle.drawCircle(35, 40, 25);
-        circle.drawRect(0, 10, 70, 70);
-        circle.endFill();
-        stage.addChild(circle);
-
-        grid.mask = circle;
-    }
-    private getCoin(row: number, column: number):PIXI.Sprite {
-        let coin = new PIXI.Sprite(this.coinTexture);
-        coin.width = GameBoard.COIN_DIAMETER;
-        coin.height = GameBoard.COIN_DIAMETER;
-        coin.position.set(
-            GameBoard.BOARD_PADDING + row * (GameBoard.COIN_DIAMETER + GameBoard.COIN_MARGIN),
-            GameBoard.BOARD_MARGIN_TOP + GameBoard.BOARD_PADDING + column * (GameBoard.COIN_DIAMETER + GameBoard.COIN_MARGIN));
-
-        return coin;
+        return new PIXI.Point(x, y);
     }
 }
