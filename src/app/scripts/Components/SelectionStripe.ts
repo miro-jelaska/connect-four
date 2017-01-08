@@ -3,6 +3,7 @@ import Graphics = PIXI.Graphics;
 import Rectangle = PIXI.Rectangle;
 import Sprite = PIXI.Sprite;
 import Container = PIXI.Container;
+import {GameBoard} from "./GameBoard";
 
 enum VisibilityLevel{
     Low = 0.01,
@@ -17,9 +18,9 @@ export class SelectionStripe implements RenderableElement{
     private readonly mouseOutEventListeners: Array<(stripeIndex:number) => void> = [];
     private readonly mouseClickEventListeners: Array<(stripeIndex:number) => void> = [];
 
-    constructor(index:number, x: number, y: number, width: number, height: number){
-        this.index = index;
-        this.stripeRectangleParameters = [x, y, width, height];
+    constructor(columnIndex: number){
+        this.index = columnIndex;
+        this.stripeRectangleParameters = SelectionStripe.getStripeRectangleParameters(columnIndex);
         this.setStripe(VisibilityLevel.Low);
     }
 
@@ -69,5 +70,19 @@ export class SelectionStripe implements RenderableElement{
         let stage = new Container();
         stage.addChild(this.stripeGraphics);
         return stage;
+    }
+
+    private static get width(): number{
+        return GameBoard.COIN_DIAMETER + GameBoard.COIN_MARGIN;
+    }
+    private static getStripeRectangleParameters(columnIndex: number): number[]{
+        let boardPadding = columnIndex == 0 ? 0: GameBoard.BOARD_PADDING - GameBoard.COIN_MARGIN/2;
+        let isFirstOrLast = columnIndex == 0 || columnIndex == (GameBoard.ROWxCOLUMN[1] - 1);
+        return [
+            boardPadding + columnIndex * SelectionStripe.width,
+            GameBoard.BOARD_MARGIN_TOP,
+            SelectionStripe.width + (isFirstOrLast ? GameBoard.COIN_MARGIN/2 : 0),
+            GameBoard.BOARD_HEIGHT
+        ];
     }
 }

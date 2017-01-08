@@ -37792,16 +37792,13 @@
 	    function GameBoard() {
 	        this.selectionStripes = [];
 	        this.selectionPointers = [];
-	        var widthOfStripe = GameBoard.COIN_DIAMETER + GameBoard.COIN_MARGIN;
-	        for (var column = 0; column < GameBoard.ROWxCOLUMN[0]; column++) {
-	            var boardPadding = column == 0 ? 0 : GameBoard.BOARD_PADDING - GameBoard.COIN_MARGIN / 2;
-	            var isFirstOrLast = column == 0 || column == (GameBoard.ROWxCOLUMN[0] - 1);
-	            var selectionStripe = new SelectionStripe_1.SelectionStripe(column, boardPadding + column * widthOfStripe, GameBoard.BOARD_MARGIN_TOP, widthOfStripe + (isFirstOrLast ? GameBoard.COIN_MARGIN / 2 : 0), GameBoard.BOARD_HEIGHT);
+	        for (var columnIndex = 0; columnIndex < GameBoard.ROWxCOLUMN[1]; columnIndex++) {
+	            var selectionStripe = new SelectionStripe_1.SelectionStripe(columnIndex);
 	            selectionStripe.subscribeTo_onMouseOver(this.onSelectionStripeMouseOver);
 	            selectionStripe.subscribeTo_onMouseOut(this.onSelectionStripeMouseOut);
 	            this.selectionStripes.push(selectionStripe);
+	            this.selectionPointers.push(new SelectionPointer_1.SelectionPointer(columnIndex));
 	        }
-	        this.selectionPointers.push(new SelectionPointer_1.SelectionPointer(1));
 	    }
 	    Object.defineProperty(GameBoard.prototype, "boardSprite", {
 	        get: function () {
@@ -37832,19 +37829,24 @@
 	        return stage;
 	    };
 	    GameBoard.getCenter = function (row, column) {
-	        // The bottom row has index of 0
-	        var x = GameBoard.BOARD_PADDING
+	        var x = this.getColumnCenter(column);
+	        var y = this.getRowCenter(row);
+	        return new PIXI.Point(x, y);
+	    };
+	    GameBoard.getColumnCenter = function (column) {
+	        return GameBoard.BOARD_PADDING
 	            + GameBoard.COIN_DIAMETER / 2
-	            + row * (GameBoard.COIN_MARGIN + GameBoard.COIN_DIAMETER);
-	        var y = GameBoard.BOARD_MARGIN_TOP
+	            + column * (GameBoard.COIN_MARGIN + GameBoard.COIN_DIAMETER);
+	    };
+	    GameBoard.getRowCenter = function (row) {
+	        return GameBoard.BOARD_MARGIN_TOP
 	            + GameBoard.BOARD_PADDING
 	            + GameBoard.COIN_DIAMETER / 2
-	            + (GameBoard.ROWxCOLUMN[0] - column) * (GameBoard.COIN_DIAMETER + GameBoard.COIN_MARGIN);
-	        return new PIXI.Point(x, y);
+	            + (GameBoard.ROWxCOLUMN[0] - row) * (GameBoard.COIN_DIAMETER + GameBoard.COIN_MARGIN);
 	    };
 	    return GameBoard;
 	}());
-	GameBoard.ROWxCOLUMN = [7, 6];
+	GameBoard.ROWxCOLUMN = [6, 7];
 	GameBoard.COIN_MARGIN = 20;
 	GameBoard.COIN_DIAMETER = 60;
 	GameBoard.BOARD_PADDING = 20;
@@ -37934,23 +37936,24 @@
 
 /***/ },
 /* 184 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var Graphics = PIXI.Graphics;
 	var Container = PIXI.Container;
+	var GameBoard_1 = __webpack_require__(179);
 	var VisibilityLevel;
 	(function (VisibilityLevel) {
 	    VisibilityLevel[VisibilityLevel["Low"] = 0.01] = "Low";
 	    VisibilityLevel[VisibilityLevel["High"] = 0.15] = "High";
 	})(VisibilityLevel || (VisibilityLevel = {}));
 	var SelectionStripe = (function () {
-	    function SelectionStripe(index, x, y, width, height) {
+	    function SelectionStripe(columnIndex) {
 	        this.mouseOverEventListeners = [];
 	        this.mouseOutEventListeners = [];
 	        this.mouseClickEventListeners = [];
-	        this.index = index;
-	        this.stripeRectangleParameters = [x, y, width, height];
+	        this.index = columnIndex;
+	        this.stripeRectangleParameters = SelectionStripe.getStripeRectangleParameters(columnIndex);
 	        this.setStripe(VisibilityLevel.Low);
 	    }
 	    SelectionStripe.prototype.setStripe = function (visibilityLevel) {
@@ -37997,6 +38000,23 @@
 	        stage.addChild(this.stripeGraphics);
 	        return stage;
 	    };
+	    Object.defineProperty(SelectionStripe, "width", {
+	        get: function () {
+	            return GameBoard_1.GameBoard.COIN_DIAMETER + GameBoard_1.GameBoard.COIN_MARGIN;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    SelectionStripe.getStripeRectangleParameters = function (columnIndex) {
+	        var boardPadding = columnIndex == 0 ? 0 : GameBoard_1.GameBoard.BOARD_PADDING - GameBoard_1.GameBoard.COIN_MARGIN / 2;
+	        var isFirstOrLast = columnIndex == 0 || columnIndex == (GameBoard_1.GameBoard.ROWxCOLUMN[1] - 1);
+	        return [
+	            boardPadding + columnIndex * SelectionStripe.width,
+	            GameBoard_1.GameBoard.BOARD_MARGIN_TOP,
+	            SelectionStripe.width + (isFirstOrLast ? GameBoard_1.GameBoard.COIN_MARGIN / 2 : 0),
+	            GameBoard_1.GameBoard.BOARD_HEIGHT
+	        ];
+	    };
 	    return SelectionStripe;
 	}());
 	exports.SelectionStripe = SelectionStripe;
@@ -38004,25 +38024,32 @@
 
 /***/ },
 /* 185 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var Container = PIXI.Container;
+	var Player_1 = __webpack_require__(186);
+	var GameBoard_1 = __webpack_require__(179);
 	var SelectionPointer = (function () {
 	    function SelectionPointer(stripeIndex) {
-	        this.sprite = this.build();
+	        this.stripeIndex = stripeIndex;
+	        this.sprite_blue = this.buildSprite(stripeIndex, Player_1.Player.Blue);
+	        this.sprite_red = this.buildSprite(stripeIndex, Player_1.Player.Red);
 	        var stage = new Container();
-	        stage.addChild(this.sprite);
+	        stage.addChild(this.sprite_blue);
+	        // stage.addChild(this.sprite_red);
 	        this.stage = stage;
 	    }
-	    SelectionPointer.prototype.build = function () {
-	        var texture = PIXI.loader.resources["./app/images/pointer-red.png"].texture;
-	        console.log('texture');
+	    SelectionPointer.prototype.buildSprite = function (stripeIndex, pointerType) {
+	        var texture = pointerType == Player_1.Player.Blue
+	            ? PIXI.loader.resources["./app/images/pointer-blue.png"].texture
+	            : PIXI.loader.resources["./app/images/pointer-red.png"].texture;
 	        var sprite = new PIXI.Sprite(texture);
 	        sprite.width = 25;
 	        sprite.height = 20;
-	        sprite.position.x = 30;
-	        sprite.position.y = 30;
+	        sprite.anchor.set(0.5, 0.5);
+	        sprite.position.x = GameBoard_1.GameBoard.getColumnCenter(stripeIndex);
+	        sprite.position.y = SelectionPointer.POINTER_MARGIN_TOP;
 	        return sprite;
 	    };
 	    SelectionPointer.prototype.getStage = function () {
@@ -38030,7 +38057,20 @@
 	    };
 	    return SelectionPointer;
 	}());
+	SelectionPointer.POINTER_MARGIN_TOP = 20;
 	exports.SelectionPointer = SelectionPointer;
+
+
+/***/ },
+/* 186 */
+/***/ function(module, exports) {
+
+	"use strict";
+	var Player;
+	(function (Player) {
+	    Player[Player["Blue"] = 0] = "Blue";
+	    Player[Player["Red"] = 1] = "Red";
+	})(Player = exports.Player || (exports.Player = {}));
 
 
 /***/ }

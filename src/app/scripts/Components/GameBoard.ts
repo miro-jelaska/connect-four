@@ -9,7 +9,7 @@ import {RenderableElement} from "../Utilities/RenderableElement";
 import {SelectionPointer} from "./SelectionPointer";
 
 export class GameBoard implements RenderableElement{
-    public static readonly ROWxCOLUMN:[number, number] = [7, 6];
+    public static readonly ROWxCOLUMN:[number, number] = [6, 7];
     public static readonly COIN_MARGIN = 20;
     public static readonly COIN_DIAMETER = 60;
     public static readonly BOARD_PADDING = 20;
@@ -21,21 +21,14 @@ export class GameBoard implements RenderableElement{
     private readonly selectionPointers: SelectionPointer[] = [];
 
     constructor(){
-        let widthOfStripe = GameBoard.COIN_DIAMETER + GameBoard.COIN_MARGIN;
-        for(var column = 0; column < GameBoard.ROWxCOLUMN[0]; column++){
-            let boardPadding = column == 0 ? 0: GameBoard.BOARD_PADDING - GameBoard.COIN_MARGIN/2;
-            let isFirstOrLast = column == 0 || column == (GameBoard.ROWxCOLUMN[0] - 1);
-            let selectionStripe = new SelectionStripe(
-                column,
-                boardPadding + column*widthOfStripe, GameBoard.BOARD_MARGIN_TOP,
-                widthOfStripe + (isFirstOrLast ? GameBoard.COIN_MARGIN/2 : 0), GameBoard.BOARD_HEIGHT
-            );
+        for(var columnIndex = 0; columnIndex < GameBoard.ROWxCOLUMN[1]; columnIndex++){
+            let selectionStripe = new SelectionStripe(columnIndex);
             selectionStripe.subscribeTo_onMouseOver(this.onSelectionStripeMouseOver);
             selectionStripe.subscribeTo_onMouseOut(this.onSelectionStripeMouseOut);
             this.selectionStripes.push(selectionStripe);
-        }
 
-        this.selectionPointers.push(new SelectionPointer(1));
+            this.selectionPointers.push(new SelectionPointer(columnIndex));
+        }
     }
 
     // Board sprite doesn't change, and thus Lazy pattern.
@@ -71,18 +64,21 @@ export class GameBoard implements RenderableElement{
         return stage;
     }
 
+
     public static getCenter(row: number, column: number): PIXI.Point{
-        // The bottom row has index of 0
-        let x =
-            GameBoard.BOARD_PADDING
+        let x = this.getColumnCenter(column);
+        let y = this.getRowCenter(row);
+        return new PIXI.Point(x, y);
+    }
+    public static getColumnCenter(column: number): number{
+        return GameBoard.BOARD_PADDING
             + GameBoard.COIN_DIAMETER/2
-            + row * (GameBoard.COIN_MARGIN + GameBoard.COIN_DIAMETER);
-        let y =
-            GameBoard.BOARD_MARGIN_TOP
+            + column * (GameBoard.COIN_MARGIN + GameBoard.COIN_DIAMETER);
+    }
+    public static getRowCenter(row: number): number{
+        return GameBoard.BOARD_MARGIN_TOP
             + GameBoard.BOARD_PADDING
             + GameBoard.COIN_DIAMETER/2
-            + (GameBoard.ROWxCOLUMN[0] - column)*(GameBoard.COIN_DIAMETER + GameBoard.COIN_MARGIN);
-
-        return new PIXI.Point(x, y);
+            + (GameBoard.ROWxCOLUMN[0] - row)*(GameBoard.COIN_DIAMETER + GameBoard.COIN_MARGIN);
     }
 }
