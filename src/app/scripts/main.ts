@@ -3,15 +3,10 @@ import Sprite = PIXI.Sprite;
 
 import {Setting} from "./Settings";
 import {Game} from "./Game";
+import IRendererOptions = PIXI.IRendererOptions;
 
 
 function onLoad():void {
-    let renderer = PIXI.autoDetectRenderer(
-            Setting.CANVAS_WIDTH, Setting.CANVAS_HEIGHT,
-            { antialias: true, transparent: true, resolution: 1 });
-    let game: Game = new Game(renderer);
-    document.body.appendChild(renderer.view);
-
     PIXI.loader
         .add([
             "./app/images/board.png",
@@ -23,11 +18,22 @@ function onLoad():void {
         .load(setup);
 
     function setup():void {
-        gameLoop();
+        let rendererOptions:IRendererOptions = {
+            antialias: true,
+            transparent: true,
+            resolution: 1
+        };
+        let renderer = PIXI.autoDetectRenderer(
+            Setting.CANVAS_WIDTH, Setting.CANVAS_HEIGHT,
+            rendererOptions);
+        document.body.appendChild(renderer.view);
+
+        let game: Game = new Game(renderer);
+        gameLoop(game);
     }
 
-    function gameLoop():void {
-        requestAnimationFrame(gameLoop);
+    function gameLoop(game: Game):void {
+        requestAnimationFrame(() => gameLoop(game));
         game.update();
         game.render();
     }

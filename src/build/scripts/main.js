@@ -49,9 +49,6 @@
 	var Settings_1 = __webpack_require__(181);
 	var Game_1 = __webpack_require__(183);
 	function onLoad() {
-	    var renderer = PIXI.autoDetectRenderer(Settings_1.Setting.CANVAS_WIDTH, Settings_1.Setting.CANVAS_HEIGHT, { antialias: true, transparent: true, resolution: 1 });
-	    var game = new Game_1.Game(renderer);
-	    document.body.appendChild(renderer.view);
 	    PIXI.loader
 	        .add([
 	        "./app/images/board.png",
@@ -62,10 +59,18 @@
 	    ])
 	        .load(setup);
 	    function setup() {
-	        gameLoop();
+	        var rendererOptions = {
+	            antialias: true,
+	            transparent: true,
+	            resolution: 1
+	        };
+	        var renderer = PIXI.autoDetectRenderer(Settings_1.Setting.CANVAS_WIDTH, Settings_1.Setting.CANVAS_HEIGHT, rendererOptions);
+	        document.body.appendChild(renderer.view);
+	        var game = new Game_1.Game(renderer);
+	        gameLoop(game);
 	    }
-	    function gameLoop() {
-	        requestAnimationFrame(gameLoop);
+	    function gameLoop(game) {
+	        requestAnimationFrame(function () { return gameLoop(game); });
 	        game.update();
 	        game.render();
 	    }
@@ -37782,9 +37787,11 @@
 	"use strict";
 	__webpack_require__(1);
 	var SelectionStripe_1 = __webpack_require__(184);
+	var SelectionPointer_1 = __webpack_require__(185);
 	var GameBoard = (function () {
 	    function GameBoard() {
 	        this.selectionStripes = [];
+	        this.selectionPointers = [];
 	        var widthOfStripe = GameBoard.COIN_DIAMETER + GameBoard.COIN_MARGIN;
 	        for (var column = 0; column < GameBoard.ROWxCOLUMN[0]; column++) {
 	            var boardPadding = column == 0 ? 0 : GameBoard.BOARD_PADDING - GameBoard.COIN_MARGIN / 2;
@@ -37794,6 +37801,7 @@
 	            selectionStripe.subscribeTo_onMouseOut(this.onSelectionStripeMouseOut);
 	            this.selectionStripes.push(selectionStripe);
 	        }
+	        this.selectionPointers.push(new SelectionPointer_1.SelectionPointer(1));
 	    }
 	    Object.defineProperty(GameBoard.prototype, "boardSprite", {
 	        get: function () {
@@ -37820,6 +37828,7 @@
 	        var stage = new PIXI.Container();
 	        stage.addChild(this.boardSprite);
 	        this.selectionStripes.forEach(function (stripe) { return stage.addChild(stripe.getStage()); });
+	        this.selectionPointers.forEach(function (pointer) { return stage.addChild(pointer.getStage()); });
 	        return stage;
 	    };
 	    GameBoard.getCenter = function (row, column) {
@@ -37991,6 +38000,37 @@
 	    return SelectionStripe;
 	}());
 	exports.SelectionStripe = SelectionStripe;
+
+
+/***/ },
+/* 185 */
+/***/ function(module, exports) {
+
+	"use strict";
+	var Container = PIXI.Container;
+	var SelectionPointer = (function () {
+	    function SelectionPointer(stripeIndex) {
+	        this.sprite = this.build();
+	        var stage = new Container();
+	        stage.addChild(this.sprite);
+	        this.stage = stage;
+	    }
+	    SelectionPointer.prototype.build = function () {
+	        var texture = PIXI.loader.resources["./app/images/pointer-red.png"].texture;
+	        console.log('texture');
+	        var sprite = new PIXI.Sprite(texture);
+	        sprite.width = 25;
+	        sprite.height = 20;
+	        sprite.position.x = 30;
+	        sprite.position.y = 30;
+	        return sprite;
+	    };
+	    SelectionPointer.prototype.getStage = function () {
+	        return this.stage;
+	    };
+	    return SelectionPointer;
+	}());
+	exports.SelectionPointer = SelectionPointer;
 
 
 /***/ }

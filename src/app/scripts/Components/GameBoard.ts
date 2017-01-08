@@ -6,6 +6,7 @@ import Container = PIXI.Container;
 import Graphics = PIXI.Graphics;
 import {SelectionStripe} from "./SelectionStripe";
 import {RenderableElement} from "../Utilities/RenderableElement";
+import {SelectionPointer} from "./SelectionPointer";
 
 export class GameBoard implements RenderableElement{
     public static readonly ROWxCOLUMN:[number, number] = [7, 6];
@@ -17,6 +18,7 @@ export class GameBoard implements RenderableElement{
     public static readonly BOARD_MARGIN_TOP = 50;
 
     private readonly selectionStripes: SelectionStripe[] = [];
+    private readonly selectionPointers: SelectionPointer[] = [];
 
     constructor(){
         let widthOfStripe = GameBoard.COIN_DIAMETER + GameBoard.COIN_MARGIN;
@@ -32,9 +34,11 @@ export class GameBoard implements RenderableElement{
             selectionStripe.subscribeTo_onMouseOut(this.onSelectionStripeMouseOut);
             this.selectionStripes.push(selectionStripe);
         }
+
+        this.selectionPointers.push(new SelectionPointer(1));
     }
 
-    // Board sprite doesn't change thus Lazy pattern.
+    // Board sprite doesn't change, and thus Lazy pattern.
     private _boardSprite:PIXI.Sprite;
     private get boardSprite(): PIXI.Sprite {
         if(this._boardSprite)
@@ -63,6 +67,7 @@ export class GameBoard implements RenderableElement{
         let stage = new PIXI.Container();
         stage.addChild(this.boardSprite);
         this.selectionStripes.forEach(stripe => stage.addChild(stripe.getStage()));
+        this.selectionPointers.forEach(pointer => stage.addChild(pointer.getStage()));
         return stage;
     }
 
