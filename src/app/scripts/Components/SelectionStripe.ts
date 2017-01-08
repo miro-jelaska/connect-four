@@ -65,6 +65,9 @@ export class SelectionStripe implements RenderableElement{
     }
     private onMouseClick(): void{
         this.mouseClickEventListeners.forEach(listener => listener(this.index));
+
+        // HACK: To force refresh if cursor stays on same stripe.
+        this.mouseOverEventListeners.forEach(listener => listener(this.index));
     }
 
     public getStage(): PIXI.Container {

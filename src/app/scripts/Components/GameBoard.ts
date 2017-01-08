@@ -30,16 +30,18 @@ export class GameBoard implements RenderableElement, UpdateableElement{
 
     constructor(activePlayer: Player){
         this.activePlayer = activePlayer;
+        this.coinsTracker = new CoinsTracker(GameBoard.ROWxCOLUMN);
+
         for(var columnIndex = 0; columnIndex < GameBoard.ROWxCOLUMN[1]; columnIndex++){
             let selectionStripe = new SelectionStripe(columnIndex);
             selectionStripe.subscribeTo_onMouseOver((stripeIndex:number) => this.onSelectionStripeMouseOver(stripeIndex));
             selectionStripe.subscribeTo_onMouseOut((stripeIndex:number) => this.onSelectionStripeMouseOut(stripeIndex));
             selectionStripe.subscribeTo_onMouseClick((stripeIndex:number) => this.onSelectionStripeMouseClick(stripeIndex));
             this.selectionStripes.push(selectionStripe);
-
-            this.selectionPointers.push(new SelectionPointer(columnIndex));
+            let immutableColumnIndex = columnIndex;
+            this.selectionPointers.push(new SelectionPointer(columnIndex, () => this.coinsTracker.isEmptySlotAvailable(immutableColumnIndex)));
         }
-        this.coinsTracker = new CoinsTracker(GameBoard.ROWxCOLUMN);
+
         this.boardSprite = this.buildBoardSprite();
     }
     private buildBoardSprite(): PIXI.Sprite {
@@ -71,11 +73,12 @@ export class GameBoard implements RenderableElement, UpdateableElement{
     }
 
     private onSelectionStripeMouseClick(stripeIndex: number): void {
-        if(this.coinsTracker.isEmptySlotAvailable(stripeIndex))
+        if(this.coinsTracker.isEmptySlotAvailable(stripeIndex) && !this.coinsTracker.isGameOver()) {
+            this.switchActivePlayer();
             this.dropCoin(stripeIndex);
-
-        this.switchActivePlayer();
+        }
     }
+
 
     private switchActivePlayer(): void {
         this.activePlayer =
