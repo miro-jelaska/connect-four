@@ -37838,6 +37838,7 @@
 	var SelectionPointer_1 = __webpack_require__(183);
 	var Player_1 = __webpack_require__(184);
 	var Coin_1 = __webpack_require__(186);
+	var CoinsTracker_1 = __webpack_require__(187);
 	var GameBoard = (function () {
 	    function GameBoard(activePlayer) {
 	        var _this = this;
@@ -37853,6 +37854,7 @@
 	            this.selectionStripes.push(selectionStripe);
 	            this.selectionPointers.push(new SelectionPointer_1.SelectionPointer(columnIndex));
 	        }
+	        this.coinsTracker = new CoinsTracker_1.CoinsTracker(GameBoard.ROWxCOLUMN);
 	        this.boardSprite = this.buildBoardSprite();
 	    }
 	    GameBoard.prototype.buildBoardSprite = function () {
@@ -37863,11 +37865,9 @@
 	        sprite.position.y = GameBoard.BOARD_MARGIN_TOP;
 	        return sprite;
 	    };
-	    GameBoard.prototype.setActivePlayer = function (player) {
-	        this.activePlayer = player;
-	    };
 	    GameBoard.prototype.dropCoin = function (columnIndex) {
-	        var coin = new Coin_1.Coin(this.activePlayer, GameBoard.getCenter(0, columnIndex));
+	        var rowAndColumnIndex = this.coinsTracker.addCoin(this.activePlayer, columnIndex);
+	        var coin = new Coin_1.Coin(this.activePlayer, GameBoard.getCenter(rowAndColumnIndex[0], rowAndColumnIndex[1]));
 	        this.allCoins.push(coin);
 	    };
 	    GameBoard.prototype.onSelectionStripeMouseOver = function (stripeIndex) {
@@ -37881,8 +37881,15 @@
 	            .hide();
 	    };
 	    GameBoard.prototype.onSelectionStripeMouseClick = function (stripeIndex) {
-	        this.dropCoin(stripeIndex);
-	        this.setActivePlayer(this.activePlayer == Player_1.Player.Blue ? Player_1.Player.Red : Player_1.Player.Blue);
+	        if (this.coinsTracker.isEmptySlotAvailable(stripeIndex))
+	            this.dropCoin(stripeIndex);
+	        this.switchActivePlayer();
+	    };
+	    GameBoard.prototype.switchActivePlayer = function () {
+	        this.activePlayer =
+	            this.activePlayer == Player_1.Player.Blue
+	                ? Player_1.Player.Red
+	                : Player_1.Player.Blue;
 	    };
 	    GameBoard.prototype.update = function () {
 	        this.allCoins.forEach(function (coin) { return coin.update(); });
@@ -38150,6 +38157,56 @@
 	Coin.DIAMETER = 60;
 	Coin.DROP_START_Y = 20;
 	exports.Coin = Coin;
+
+
+/***/ },
+/* 187 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var GameBoard_1 = __webpack_require__(181);
+	var Player_1 = __webpack_require__(184);
+	var CoinSlot;
+	(function (CoinSlot) {
+	    CoinSlot[CoinSlot["Empty"] = 0] = "Empty";
+	    CoinSlot[CoinSlot["Blue"] = 1] = "Blue";
+	    CoinSlot[CoinSlot["Red"] = 2] = "Red";
+	})(CoinSlot || (CoinSlot = {}));
+	var CoinsTracker = (function () {
+	    function CoinsTracker(boardDimensions) {
+	        this.allSlots = [];
+	        if (boardDimensions[0] < 0 || boardDimensions[1] < 0)
+	            throw new Error('Board dimensions must be positive numbers.');
+	        this.row_x_column = boardDimensions;
+	        for (var columnIndex = 0; columnIndex < GameBoard_1.GameBoard.ROWxCOLUMN[1]; columnIndex++) {
+	            var wholeColumn = [];
+	            for (var rowIndex = 0; rowIndex < GameBoard_1.GameBoard.ROWxCOLUMN[0]; rowIndex++) {
+	                wholeColumn.push(CoinSlot.Empty);
+	            }
+	            this.allSlots.push(wholeColumn);
+	        }
+	    }
+	    CoinsTracker.prototype.isEmptySlotAvailable = function (columnIndex) {
+	        return this.allSlots[columnIndex].some(function (slot) { return slot == CoinSlot.Empty; });
+	    };
+	    CoinsTracker.prototype.addCoin = function (player, columnIndex) {
+	        if (!this.isEmptySlotAvailable(columnIndex))
+	            throw new Error('You tried to insert coin to column at index `' + columnIndex + '` that has not empty slots.');
+	        for (var rowIndex = 0; rowIndex < this.row_x_column[0]; rowIndex++) {
+	            if (this.allSlots[columnIndex][rowIndex] == CoinSlot.Empty) {
+	                this.allSlots[columnIndex][rowIndex] = this.playerToCoinSlot(player);
+	                return [rowIndex, columnIndex];
+	            }
+	        }
+	    };
+	    CoinsTracker.prototype.playerToCoinSlot = function (player) {
+	        if (player == Player_1.Player.Blue)
+	            return CoinSlot.Blue;
+	        return CoinSlot.Red;
+	    };
+	    return CoinsTracker;
+	}());
+	exports.CoinsTracker = CoinsTracker;
 
 
 /***/ }

@@ -10,7 +10,7 @@ import {SelectionPointer} from "./SelectionPointer";
 import {Player} from "../Utilities/Player";
 import {Coin} from "./Coin";
 import {UpdateableElement} from "../Utilities/UpdateableElement";
-import {Game} from "../Game";
+import {CoinsTracker} from "../Utilities/CoinsTracker";
 
 export class GameBoard implements RenderableElement, UpdateableElement{
     public static readonly ROWxCOLUMN:[number, number] = [6, 7];
@@ -21,6 +21,7 @@ export class GameBoard implements RenderableElement, UpdateableElement{
     public static readonly BOARD_MARGIN_TOP = 50;
 
     private readonly boardSprite: PIXI.Sprite;
+    private readonly coinsTracker: CoinsTracker;
     private readonly selectionStripes: SelectionStripe[] = [];
     private readonly selectionPointers: SelectionPointer[] = [];
     private readonly allCoins: Coin[] = [];
@@ -38,7 +39,7 @@ export class GameBoard implements RenderableElement, UpdateableElement{
 
             this.selectionPointers.push(new SelectionPointer(columnIndex));
         }
-
+        this.coinsTracker = new CoinsTracker(GameBoard.ROWxCOLUMN);
         this.boardSprite = this.buildBoardSprite();
     }
     private buildBoardSprite(): PIXI.Sprite {
@@ -50,12 +51,9 @@ export class GameBoard implements RenderableElement, UpdateableElement{
         return sprite;
     }
 
-    private setActivePlayer(player: Player) {
-        this.activePlayer = player;
-    }
-
     private dropCoin(columnIndex: number): void {
-        let coin = new Coin(this.activePlayer, GameBoard.getCenter(0, columnIndex));
+        let rowAndColumnIndex = this.coinsTracker.addCoin(this.activePlayer, columnIndex);
+        let coin = new Coin(this.activePlayer, GameBoard.getCenter(rowAndColumnIndex[0], rowAndColumnIndex[1]));
         this.allCoins.push(coin);
     }
 
@@ -73,8 +71,17 @@ export class GameBoard implements RenderableElement, UpdateableElement{
     }
 
     private onSelectionStripeMouseClick(stripeIndex: number): void {
-        this.dropCoin(stripeIndex);
-        this.setActivePlayer(this.activePlayer == Player.Blue ? Player.Red : Player.Blue);
+        if(this.coinsTracker.isEmptySlotAvailable(stripeIndex))
+            this.dropCoin(stripeIndex);
+
+        this.switchActivePlayer();
+    }
+
+    private switchActivePlayer(): void {
+        this.activePlayer =
+            this.activePlayer == Player.Blue
+            ? Player.Red
+            : Player.Blue;
     }
 
     public update(): void {
