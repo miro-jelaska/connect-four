@@ -12,9 +12,10 @@ enum VisibilityLevel{
 }
 
 export class SelectionStripe implements RenderableElement{
+    public readonly index: number;
+
     private stripeGraphics: Graphics;
     private readonly stripeRectangleParameters: number[];
-    private readonly index: number;
     private readonly mouseOverEventListeners: Array<(stripeIndex:number) => void> = [];
     private readonly mouseOutEventListeners: Array<(stripeIndex:number) => void> = [];
     private readonly mouseClickEventListeners: Array<(stripeIndex:number) => void> = [];
@@ -40,13 +41,22 @@ export class SelectionStripe implements RenderableElement{
         this.stripeGraphics = stripe;
     }
 
+    public setFocus(isInFocus: boolean): void {
+        if(isInFocus){
+            this.setStripe(VisibilityLevel.High);
+            this.mouseOverEventListeners.forEach(listener => listener(this.index));
+        } else {
+            this.setStripe(VisibilityLevel.Low);
+            this.mouseOutEventListeners.forEach(listener => listener(this.index));
+        }
+    }
+
     public subscribeTo_onMouseOver(eventListener: (stripeIndex:number) => void){
         this.mouseOverEventListeners.push(eventListener);
     }
     private onMouseOver(): void{
         if(this.stripeGraphics.alpha != VisibilityLevel.High) {
-            this.setStripe(VisibilityLevel.High);
-            this.mouseOverEventListeners.forEach(listener => listener(this.index));
+            this.setFocus(true);
         }
     }
 
@@ -55,8 +65,7 @@ export class SelectionStripe implements RenderableElement{
     }
     private onMouseOut(): void{
         if(this.stripeGraphics.alpha != VisibilityLevel.Low){
-            this.setStripe(VisibilityLevel.Low);
-            this.mouseOutEventListeners.forEach(listener => listener(this.index));
+            this.setFocus(false);
         }
     }
 

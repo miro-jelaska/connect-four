@@ -60,8 +60,10 @@ export class GameBoard implements RenderableElement, UpdateableElement{
         this.allCoins.push(coin);
     }
 
-
     private onSelectionStripeMouseOver(stripeIndex: number): void {
+        this.selectionStripes
+            .filter((stripe: SelectionStripe) => stripe.index !== stripeIndex)
+            .forEach((stripe: SelectionStripe) => stripe.setFocus(false));
         this.selectionPointers
             .find((pointer: SelectionPointer) => pointer.stripeIndex === stripeIndex)
             .show(this.activePlayer);

@@ -37876,6 +37876,9 @@
 	        this.allCoins.push(coin);
 	    };
 	    GameBoard.prototype.onSelectionStripeMouseOver = function (stripeIndex) {
+	        this.selectionStripes
+	            .filter(function (stripe) { return stripe.index !== stripeIndex; })
+	            .forEach(function (stripe) { return stripe.setFocus(false); });
 	        this.selectionPointers
 	            .find(function (pointer) { return pointer.stripeIndex === stripeIndex; })
 	            .show(this.activePlayer);
@@ -37971,24 +37974,31 @@
 	        stripe.on('click', function () { return _this.onMouseClick(); });
 	        this.stripeGraphics = stripe;
 	    };
+	    SelectionStripe.prototype.setFocus = function (isInFocus) {
+	        var _this = this;
+	        if (isInFocus) {
+	            this.setStripe(VisibilityLevel.High);
+	            this.mouseOverEventListeners.forEach(function (listener) { return listener(_this.index); });
+	        }
+	        else {
+	            this.setStripe(VisibilityLevel.Low);
+	            this.mouseOutEventListeners.forEach(function (listener) { return listener(_this.index); });
+	        }
+	    };
 	    SelectionStripe.prototype.subscribeTo_onMouseOver = function (eventListener) {
 	        this.mouseOverEventListeners.push(eventListener);
 	    };
 	    SelectionStripe.prototype.onMouseOver = function () {
-	        var _this = this;
 	        if (this.stripeGraphics.alpha != VisibilityLevel.High) {
-	            this.setStripe(VisibilityLevel.High);
-	            this.mouseOverEventListeners.forEach(function (listener) { return listener(_this.index); });
+	            this.setFocus(true);
 	        }
 	    };
 	    SelectionStripe.prototype.subscribeTo_onMouseOut = function (eventListener) {
 	        this.mouseOutEventListeners.push(eventListener);
 	    };
 	    SelectionStripe.prototype.onMouseOut = function () {
-	        var _this = this;
 	        if (this.stripeGraphics.alpha != VisibilityLevel.Low) {
-	            this.setStripe(VisibilityLevel.Low);
-	            this.mouseOutEventListeners.forEach(function (listener) { return listener(_this.index); });
+	            this.setFocus(false);
 	        }
 	    };
 	    SelectionStripe.prototype.subscribeTo_onMouseClick = function (eventListener) {

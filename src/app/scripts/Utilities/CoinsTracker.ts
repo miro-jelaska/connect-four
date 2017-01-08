@@ -78,7 +78,7 @@ export class CoinsTracker {
             return CoinSlot.Blue;
         return CoinSlot.Red;
     }
-    private coinToPlayerSlot(coin: coin): Player {
+    private coinToPlayerSlot(coin: CoinSlot): Player {
         if(coin == CoinSlot.Blue)
             return Player.Blue;
         return Player.Red;
