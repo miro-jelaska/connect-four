@@ -4,6 +4,7 @@ import Rectangle = PIXI.Rectangle;
 import Sprite = PIXI.Sprite;
 import Container = PIXI.Container;
 import {GameBoard} from "./GameBoard";
+import {Coin} from "./Coin";
 
 enum VisibilityLevel{
     Low = 0.01,
@@ -73,7 +74,7 @@ export class SelectionStripe implements RenderableElement{
     }
 
     private static get width(): number{
-        return GameBoard.COIN_DIAMETER + GameBoard.COIN_MARGIN;
+        return Coin.DIAMETER + GameBoard.COIN_MARGIN;
     }
     private static getStripeRectangleParameters(columnIndex: number): number[]{
         let boardPadding = columnIndex == 0 ? 0: GameBoard.BOARD_PADDING - GameBoard.COIN_MARGIN/2;

@@ -37811,6 +37811,7 @@
 	        this.scoreBoard = new ScoreBoard_1.ScoreBoard();
 	    }
 	    Game.prototype.update = function () {
+	        this.gameBoard.update();
 	    };
 	    Game.prototype.render = function () {
 	        var rootStage = new PIXI.Container();
@@ -37836,11 +37837,13 @@
 	var SelectionStripe_1 = __webpack_require__(182);
 	var SelectionPointer_1 = __webpack_require__(183);
 	var Player_1 = __webpack_require__(184);
+	var Coin_1 = __webpack_require__(186);
 	var GameBoard = (function () {
 	    function GameBoard(activePlayer) {
 	        var _this = this;
 	        this.selectionStripes = [];
 	        this.selectionPointers = [];
+	        this.allCoins = [];
 	        this.activePlayer = activePlayer;
 	        for (var columnIndex = 0; columnIndex < GameBoard.ROWxCOLUMN[1]; columnIndex++) {
 	            var selectionStripe = new SelectionStripe_1.SelectionStripe(columnIndex);
@@ -37849,7 +37852,6 @@
 	            selectionStripe.subscribeTo_onMouseClick(function (stripeIndex) { return _this.onSelectionStripeMouseClick(stripeIndex); });
 	            this.selectionStripes.push(selectionStripe);
 	            this.selectionPointers.push(new SelectionPointer_1.SelectionPointer(columnIndex));
-	            console.log(this.selectionPointers);
 	        }
 	        this.boardSprite = this.buildBoardSprite();
 	    }
@@ -37864,6 +37866,11 @@
 	    GameBoard.prototype.setActivePlayer = function (player) {
 	        this.activePlayer = player;
 	    };
+	    GameBoard.prototype.dropCoin = function (columnIndex) {
+	        var x = GameBoard.getColumnCenter(columnIndex);
+	        var coin = new Coin_1.Coin(this.activePlayer, x);
+	        this.allCoins.push(coin);
+	    };
 	    GameBoard.prototype.onSelectionStripeMouseOver = function (stripeIndex) {
 	        this.selectionPointers
 	            .find(function (pointer) { return pointer.stripeIndex == stripeIndex; })
@@ -37875,10 +37882,15 @@
 	            .hide();
 	    };
 	    GameBoard.prototype.onSelectionStripeMouseClick = function (stripeIndex) {
+	        this.dropCoin(stripeIndex);
 	        this.setActivePlayer(this.activePlayer == Player_1.Player.Blue ? Player_1.Player.Red : Player_1.Player.Blue);
+	    };
+	    GameBoard.prototype.update = function () {
+	        this.allCoins.forEach(function (coin) { return coin.update(); });
 	    };
 	    GameBoard.prototype.getStage = function () {
 	        var stage = new PIXI.Container();
+	        this.allCoins.forEach(function (coin) { return stage.addChild(coin.getStage()); });
 	        stage.addChild(this.boardSprite);
 	        this.selectionStripes.forEach(function (stripe) { return stage.addChild(stripe.getStage()); });
 	        this.selectionPointers.forEach(function (pointer) { return stage.addChild(pointer.getStage()); });
@@ -37891,20 +37903,19 @@
 	    };
 	    GameBoard.getColumnCenter = function (column) {
 	        return GameBoard.BOARD_PADDING
-	            + GameBoard.COIN_DIAMETER / 2
-	            + column * (GameBoard.COIN_MARGIN + GameBoard.COIN_DIAMETER);
+	            + Coin_1.Coin.DIAMETER / 2
+	            + column * (GameBoard.COIN_MARGIN + Coin_1.Coin.DIAMETER);
 	    };
 	    GameBoard.getRowCenter = function (row) {
 	        return GameBoard.BOARD_MARGIN_TOP
 	            + GameBoard.BOARD_PADDING
-	            + GameBoard.COIN_DIAMETER / 2
-	            + (GameBoard.ROWxCOLUMN[0] - row) * (GameBoard.COIN_DIAMETER + GameBoard.COIN_MARGIN);
+	            + Coin_1.Coin.DIAMETER / 2
+	            + (GameBoard.ROWxCOLUMN[0] - row) * (Coin_1.Coin.DIAMETER + GameBoard.COIN_MARGIN);
 	    };
 	    return GameBoard;
 	}());
 	GameBoard.ROWxCOLUMN = [6, 7];
 	GameBoard.COIN_MARGIN = 20;
-	GameBoard.COIN_DIAMETER = 60;
 	GameBoard.BOARD_PADDING = 20;
 	GameBoard.BOARD_WIDTH = 580;
 	GameBoard.BOARD_HEIGHT = 500;
@@ -37920,6 +37931,7 @@
 	var Graphics = PIXI.Graphics;
 	var Container = PIXI.Container;
 	var GameBoard_1 = __webpack_require__(181);
+	var Coin_1 = __webpack_require__(186);
 	var VisibilityLevel;
 	(function (VisibilityLevel) {
 	    VisibilityLevel[VisibilityLevel["Low"] = 0.01] = "Low";
@@ -37981,7 +37993,7 @@
 	    };
 	    Object.defineProperty(SelectionStripe, "width", {
 	        get: function () {
-	            return GameBoard_1.GameBoard.COIN_DIAMETER + GameBoard_1.GameBoard.COIN_MARGIN;
+	            return Coin_1.Coin.DIAMETER + GameBoard_1.GameBoard.COIN_MARGIN;
 	        },
 	        enumerable: true,
 	        configurable: true
@@ -38094,6 +38106,43 @@
 	    return ScoreBoard;
 	}());
 	exports.ScoreBoard = ScoreBoard;
+
+
+/***/ },
+/* 186 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var Player_1 = __webpack_require__(184);
+	var Coin = (function () {
+	    function Coin(player, x) {
+	        this.player = player;
+	        console.log('new coin');
+	        var texture = player == Player_1.Player.Blue
+	            ? PIXI.loader.resources["./app/images/coin-blue.png"].texture
+	            : PIXI.loader.resources["./app/images/coin-red.png"].texture;
+	        var sprite = new PIXI.Sprite(texture);
+	        sprite.width = Coin.DIAMETER;
+	        sprite.height = Coin.DIAMETER;
+	        sprite.anchor.set(0.5, 0.5);
+	        sprite.position.x = x;
+	        sprite.position.y = 30;
+	        this.sprite = sprite;
+	        var stage = new PIXI.Container();
+	        stage.addChild(sprite);
+	        this.stage = stage;
+	    }
+	    Coin.prototype.update = function () {
+	        this.sprite.position.y = this.sprite.position.y + Coin.DROP_VELOCITY;
+	    };
+	    Coin.prototype.getStage = function () {
+	        return this.stage;
+	    };
+	    return Coin;
+	}());
+	Coin.DROP_VELOCITY = 2;
+	Coin.DIAMETER = 60;
+	exports.Coin = Coin;
 
 
 /***/ }

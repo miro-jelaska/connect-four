@@ -5,7 +5,6 @@ import {Setting} from "./Settings";
 import {Game} from "./Game";
 import IRendererOptions = PIXI.IRendererOptions;
 
-
 function onLoad(): void {
     PIXI.loader
         .add([
@@ -18,7 +17,7 @@ function onLoad(): void {
         .load(setup);
 
     function setup(): void {
-        let rendererOptions:IRendererOptions = {
+        let rendererOptions: IRendererOptions = {
             antialias: true,
             transparent: true,
             resolution: 1

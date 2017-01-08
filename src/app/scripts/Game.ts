@@ -19,7 +19,7 @@ export class Game {
     }
 
     public update():void {
-
+        this.gameBoard.update();
     }
     public render():void{
         let rootStage = new PIXI.Container();

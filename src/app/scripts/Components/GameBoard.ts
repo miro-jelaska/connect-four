@@ -8,11 +8,12 @@ import {SelectionStripe} from "./SelectionStripe";
 import {RenderableElement} from "../Utilities/RenderableElement";
 import {SelectionPointer} from "./SelectionPointer";
 import {Player} from "../Utilities/Player";
+import {Coin} from "./Coin";
+import {UpdateableElement} from "../Utilities/UpdateableElement";
 
-export class GameBoard implements RenderableElement{
+export class GameBoard implements RenderableElement, UpdateableElement{
     public static readonly ROWxCOLUMN:[number, number] = [6, 7];
     public static readonly COIN_MARGIN = 20;
-    public static readonly COIN_DIAMETER = 60;
     public static readonly BOARD_PADDING = 20;
     public static readonly BOARD_WIDTH = 580;
     public static readonly BOARD_HEIGHT = 500;
@@ -20,7 +21,8 @@ export class GameBoard implements RenderableElement{
 
     private readonly boardSprite: PIXI.Sprite;
     private readonly selectionStripes: SelectionStripe[] = [];
-    private readonly selectionPointers: Array<SelectionPointer> = [];
+    private readonly selectionPointers: SelectionPointer[] = [];
+    private readonly allCoins: Coin[] = [];
 
     private activePlayer: Player;
 
@@ -34,7 +36,6 @@ export class GameBoard implements RenderableElement{
             this.selectionStripes.push(selectionStripe);
 
             this.selectionPointers.push(new SelectionPointer(columnIndex));
-            console.log(this.selectionPointers);
         }
 
         this.boardSprite = this.buildBoardSprite();
@@ -52,6 +53,13 @@ export class GameBoard implements RenderableElement{
         this.activePlayer = player;
     }
 
+    private dropCoin(columnIndex: number): void {
+        let x = GameBoard.getColumnCenter(columnIndex);
+        let coin = new Coin(this.activePlayer, x);
+        this.allCoins.push(coin);
+    }
+
+
     private onSelectionStripeMouseOver(stripeIndex: number): void {
         this.selectionPointers
             .find((pointer: SelectionPointer) => pointer.stripeIndex == stripeIndex)
@@ -65,15 +73,22 @@ export class GameBoard implements RenderableElement{
     }
 
     private onSelectionStripeMouseClick(stripeIndex: number): void {
+        this.dropCoin(stripeIndex);
         this.setActivePlayer(this.activePlayer == Player.Blue ? Player.Red : Player.Blue);
     }
 
+    public update(): void {
+        this.allCoins.forEach(coin => coin.update());
+    }
 
     public getStage():PIXI.Container {
         let stage = new PIXI.Container();
+
+        this.allCoins.forEach(coin => stage.addChild(coin.getStage()));
         stage.addChild(this.boardSprite);
         this.selectionStripes.forEach(stripe => stage.addChild(stripe.getStage()));
         this.selectionPointers.forEach(pointer => stage.addChild(pointer.getStage()));
+
         return stage;
     }
 
@@ -85,13 +100,13 @@ export class GameBoard implements RenderableElement{
     }
     public static getColumnCenter(column: number): number{
         return GameBoard.BOARD_PADDING
-            + GameBoard.COIN_DIAMETER/2
-            + column * (GameBoard.COIN_MARGIN + GameBoard.COIN_DIAMETER);
+            + Coin.DIAMETER/2
+            + column * (GameBoard.COIN_MARGIN + Coin.DIAMETER);
     }
     public static getRowCenter(row: number): number{
         return GameBoard.BOARD_MARGIN_TOP
             + GameBoard.BOARD_PADDING
-            + GameBoard.COIN_DIAMETER/2
-            + (GameBoard.ROWxCOLUMN[0] - row)*(GameBoard.COIN_DIAMETER + GameBoard.COIN_MARGIN);
+            + Coin.DIAMETER/2
+            + (GameBoard.ROWxCOLUMN[0] - row)*(Coin.DIAMETER + GameBoard.COIN_MARGIN);
     }
 }
