@@ -37800,7 +37800,7 @@
 
 	"use strict";
 	var GameBoard_1 = __webpack_require__(181);
-	var ScoreBoard_1 = __webpack_require__(187);
+	var ScoreBoard_1 = __webpack_require__(188);
 	var Player_1 = __webpack_require__(184);
 	var Game = (function () {
 	    function Game(rendered) {
@@ -38180,7 +38180,7 @@
 	"use strict";
 	var GameBoard_1 = __webpack_require__(181);
 	var Player_1 = __webpack_require__(184);
-	var Debug_1 = __webpack_require__(189);
+	var Debug_1 = __webpack_require__(187);
 	var CoinSlot;
 	(function (CoinSlot) {
 	    CoinSlot[CoinSlot["Empty"] = 0] = "Empty";
@@ -38387,6 +38387,28 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
+	var CoinsTracker_1 = __webpack_require__(186);
+	var Player_1 = __webpack_require__(184);
+	var Debug;
+	(function (Debug) {
+	    function toString(slot) {
+	        return slot == CoinsTracker_1.CoinSlot.Empty
+	            ? 'Empty' :
+	            (slot == CoinsTracker_1.CoinSlot.Blue ? 'blue' : 'red');
+	    }
+	    Debug.toString = toString;
+	    function toString_player(player) {
+	        return player === Player_1.Player.Blue ? 'Blue' : 'Red';
+	    }
+	    Debug.toString_player = toString_player;
+	})(Debug = exports.Debug || (exports.Debug = {}));
+
+
+/***/ },
+/* 188 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
 	__webpack_require__(1);
 	var ScoreBoard = (function () {
 	    function ScoreBoard() {
@@ -38412,29 +38434,6 @@
 	    return ScoreBoard;
 	}());
 	exports.ScoreBoard = ScoreBoard;
-
-
-/***/ },
-/* 188 */,
-/* 189 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var CoinsTracker_1 = __webpack_require__(186);
-	var Player_1 = __webpack_require__(184);
-	var Debug;
-	(function (Debug) {
-	    function toString(slot) {
-	        return slot == CoinsTracker_1.CoinSlot.Empty
-	            ? 'Empty' :
-	            (slot == CoinsTracker_1.CoinSlot.Blue ? 'blue' : 'red');
-	    }
-	    Debug.toString = toString;
-	    function toString_player(player) {
-	        return player === Player_1.Player.Blue ? 'Blue' : 'Red';
-	    }
-	    Debug.toString_player = toString_player;
-	})(Debug = exports.Debug || (exports.Debug = {}));
 
 
 /***/ }

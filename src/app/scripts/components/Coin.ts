@@ -1,9 +1,9 @@
-import {RenderableElement} from "../Utilities/RenderableElement";
-import {Player} from "../Utilities/Player";
-import {UpdateableElement} from "../Utilities/UpdateableElement";
+import {RenderableElement} from "../utilities/RenderableElement";
+import {Player} from "../utilities/Player";
+import {UpdateableElement} from "../utilities/UpdateableElement";
 import Sprite = PIXI.Sprite;
 import Container = PIXI.Container;
-import {Debug} from "../Debug/Debug";
+import {Debug} from "../debug/Debug";
 
 export class Coin implements RenderableElement, UpdateableElement{
     public static readonly DROP_VELOCITY = 6;

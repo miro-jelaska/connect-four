@@ -1,5 +1,5 @@
-import {CoinSlot}  from '../Utilities/CoinsTracker';
-import {Player} from "../Utilities/Player";
+import {CoinSlot}  from '../utilities/CoinsTracker';
+import {Player} from "../utilities/Player";
 
 export module Debug
 {

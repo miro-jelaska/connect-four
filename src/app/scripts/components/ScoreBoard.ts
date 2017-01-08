@@ -1,5 +1,5 @@
 import 'pixi.js';
-import {RenderableElement} from "../Utilities/RenderableElement";
+import {RenderableElement} from "../utilities/RenderableElement";
 
 export class ScoreBoard implements RenderableElement{
     public getStage(): PIXI.Container{

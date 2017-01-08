@@ -1,7 +1,7 @@
-import {GameBoard} from "./Components/GameBoard";
-import {ScoreBoard} from "./Components/ScoreBoard";
-import {RenderableElement} from "./Utilities/RenderableElement";
-import {Player} from "./Utilities/Player";
+import {GameBoard} from "./components/GameBoard";
+import {ScoreBoard} from "./components/ScoreBoard";
+import {RenderableElement} from "./utilities/RenderableElement";
+import {Player} from "./utilities/Player";
 export class Game {
     private readonly renderer:PIXI.CanvasRenderer | PIXI.WebGLRenderer;
 
