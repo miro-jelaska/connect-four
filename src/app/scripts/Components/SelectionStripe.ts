@@ -14,7 +14,7 @@ enum VisibilityLevel{
 export class SelectionStripe implements RenderableElement{
     private stripeGraphics: Graphics;
     private readonly stripeRectangleParameters: number[];
-    private readonly index:number;
+    private readonly index: number;
     private readonly mouseOverEventListeners: Array<(stripeIndex:number) => void> = [];
     private readonly mouseOutEventListeners: Array<(stripeIndex:number) => void> = [];
     private readonly mouseClickEventListeners: Array<(stripeIndex:number) => void> = [];

@@ -6,7 +6,7 @@ import Container = PIXI.Container;
 import {Debug} from "../Debug/Debug";
 
 export class Coin implements RenderableElement, UpdateableElement{
-    public static readonly DROP_VELOCITY = 4.5;
+    public static readonly DROP_VELOCITY = 6;
     public static readonly DIAMETER = 60;
     public static readonly DROP_START_Y = 20;
 

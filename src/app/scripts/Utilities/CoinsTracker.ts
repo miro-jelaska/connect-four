@@ -11,7 +11,9 @@ export enum CoinSlot {
 export class CoinsTracker {
     private readonly row_x_column: [number, number];
     private readonly allSlots: CoinSlot[][] = [];
-    private readonly winner?: Player = null;
+
+    private winner?: Player = null;
+
     constructor(boardDimensions: [number, number]){
         if(boardDimensions[0] < 0 || boardDimensions[1] < 0)
             throw new Error('Board dimensions must be positive numbers.');
@@ -76,6 +78,11 @@ export class CoinsTracker {
             return CoinSlot.Blue;
         return CoinSlot.Red;
     }
+    private coinToPlayerSlot(coin: coin): Player {
+        if(coin == CoinSlot.Blue)
+            return Player.Blue;
+        return Player.Red;
+    }
 
     private checkIsWinningMove(column_x_row_coinPosition: [number, number]): void {
         let activeCoinType: CoinSlot = this.allSlots[column_x_row_coinPosition[0]][column_x_row_coinPosition[1]];
@@ -113,21 +120,94 @@ export class CoinsTracker {
         }
         console.log('right: ' + right);
 
+        // bottom_right ↘︎︎
+        console.log('> top_right');
+        let bottom_right = 0;
+        for(var columnIndex = column_x_row_coinPosition[0] + 1, rowIndex = column_x_row_coinPosition[1] - 1;
+            columnIndex < column_x_row_coinPosition[0] + 4
+            && columnIndex < this.row_x_column[1]
+            && rowIndex > column_x_row_coinPosition[1] - 4
+            && rowIndex >= 0;
+            columnIndex++, rowIndex--){
+            if(this.allSlots[columnIndex][rowIndex] === activeCoinType){
+                bottom_right = bottom_right + 1;
+                console.log(Debug.toString(this.allSlots[columnIndex][rowIndex]));
+            }
+            else break;
+        }
+        console.log('bottom_right: ' + bottom_right);
+
         // down ↓
         console.log('> down');
-        let down = 0;
+        let bottom = 0;
         for(var rowIndex = column_x_row_coinPosition[1] - 1; rowIndex > column_x_row_coinPosition[1] - 4 && rowIndex >= 0; rowIndex--){
             if(this.allSlots[column_x_row_coinPosition[0]][rowIndex] === activeCoinType){
-                down = down + 1;
+                bottom = bottom + 1;
                 console.log(Debug.toString(this.allSlots[column_x_row_coinPosition[0]][rowIndex]));
             }
             else break;
         }
-        console.log('down: ' + down);
+        console.log('down: ' + bottom);
 
+        // bottom_left ↙︎︎︎
+        console.log('> top_right');
+        let bottom_left = 0;
+        for(var columnIndex = column_x_row_coinPosition[0] - 1, rowIndex = column_x_row_coinPosition[1] - 1;
+            columnIndex > column_x_row_coinPosition[0] - 4
+            && columnIndex >= 0
+            && rowIndex > column_x_row_coinPosition[1] - 4
+            && rowIndex >= 0;
+            columnIndex--, rowIndex--){
+            if(this.allSlots[columnIndex][rowIndex] === activeCoinType){
+                bottom_left = bottom_left + 1;
+                console.log(Debug.toString(this.allSlots[columnIndex][rowIndex]));
+            }
+            else break;
+        }
+        console.log('bottom_left: ' + bottom_left);
 
+        // left ←
+        console.log('> left');
+        let left = 0;
+        for(var columnIndex = column_x_row_coinPosition[0] - 1;
+            columnIndex > column_x_row_coinPosition[0] - 4
+            && columnIndex >= 0;
+            columnIndex--){
+            if(this.allSlots[columnIndex][column_x_row_coinPosition[1]] === activeCoinType){
+                left = left + 1;
+                console.log(Debug.toString(this.allSlots[columnIndex][column_x_row_coinPosition[1]]));
+            }
+            else break;
+        }
+        console.log('left: ' + left);
 
+        // top_left ↖︎
+        console.log('> top_left');
+        let top_left = 0;
+        for(var columnIndex = column_x_row_coinPosition[0] - 1, rowIndex = column_x_row_coinPosition[1] + 1;
+            columnIndex > column_x_row_coinPosition[0] - 4
+            && columnIndex >= 0
+            && rowIndex < column_x_row_coinPosition[1] + 4
+            && rowIndex < this.row_x_column[0];
+            columnIndex--, rowIndex++){
+            if(this.allSlots[columnIndex][rowIndex] === activeCoinType){
+                top_left = top_left + 1;
+                console.log(Debug.toString(this.allSlots[columnIndex][rowIndex]));
+            }
+            else break;
+        }
+        console.log('top_left: ' + top_left);
 
+        let isWin =
+            bottom >= 3
+            || top_right + bottom_left >= 3
+            || right + left >= 3
+            || bottom_right + top_left >= 3;
+
+        if(isWin){
+            this.winner = this.coinToPlayerSlot(activeCoinType);
+            console.log("WIN: " + Debug.toString_player(this.winner));
+        }
 
         console.log('------');
     }

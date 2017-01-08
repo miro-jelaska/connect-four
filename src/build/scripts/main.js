@@ -38065,7 +38065,7 @@
 	    };
 	    return Coin;
 	}());
-	Coin.DROP_VELOCITY = 4.5;
+	Coin.DROP_VELOCITY = 6;
 	Coin.DIAMETER = 60;
 	Coin.DROP_START_Y = 20;
 	exports.Coin = Coin;
@@ -38208,6 +38208,11 @@
 	            return CoinSlot.Blue;
 	        return CoinSlot.Red;
 	    };
+	    CoinsTracker.prototype.coinToPlayerSlot = function (coin) {
+	        if (coin == CoinSlot.Blue)
+	            return Player_1.Player.Blue;
+	        return Player_1.Player.Red;
+	    };
 	    CoinsTracker.prototype.checkIsWinningMove = function (column_x_row_coinPosition) {
 	        var activeCoinType = this.allSlots[column_x_row_coinPosition[0]][column_x_row_coinPosition[1]];
 	        console.log('ActiveCoin: ' + Debug_1.Debug.toString(activeCoinType));
@@ -38237,17 +38242,79 @@
 	                break;
 	        }
 	        console.log('right: ' + right);
+	        console.log('> top_right');
+	        var bottom_right = 0;
+	        for (var columnIndex = column_x_row_coinPosition[0] + 1, rowIndex = column_x_row_coinPosition[1] - 1; columnIndex < column_x_row_coinPosition[0] + 4
+	            && columnIndex < this.row_x_column[1]
+	            && rowIndex > column_x_row_coinPosition[1] - 4
+	            && rowIndex >= 0; columnIndex++, rowIndex--) {
+	            if (this.allSlots[columnIndex][rowIndex] === activeCoinType) {
+	                bottom_right = bottom_right + 1;
+	                console.log(Debug_1.Debug.toString(this.allSlots[columnIndex][rowIndex]));
+	            }
+	            else
+	                break;
+	        }
+	        console.log('bottom_right: ' + bottom_right);
 	        console.log('> down');
-	        var down = 0;
+	        var bottom = 0;
 	        for (var rowIndex = column_x_row_coinPosition[1] - 1; rowIndex > column_x_row_coinPosition[1] - 4 && rowIndex >= 0; rowIndex--) {
 	            if (this.allSlots[column_x_row_coinPosition[0]][rowIndex] === activeCoinType) {
-	                down = down + 1;
+	                bottom = bottom + 1;
 	                console.log(Debug_1.Debug.toString(this.allSlots[column_x_row_coinPosition[0]][rowIndex]));
 	            }
 	            else
 	                break;
 	        }
-	        console.log('down: ' + down);
+	        console.log('down: ' + bottom);
+	        console.log('> top_right');
+	        var bottom_left = 0;
+	        for (var columnIndex = column_x_row_coinPosition[0] - 1, rowIndex = column_x_row_coinPosition[1] - 1; columnIndex > column_x_row_coinPosition[0] - 4
+	            && columnIndex >= 0
+	            && rowIndex > column_x_row_coinPosition[1] - 4
+	            && rowIndex >= 0; columnIndex--, rowIndex--) {
+	            if (this.allSlots[columnIndex][rowIndex] === activeCoinType) {
+	                bottom_left = bottom_left + 1;
+	                console.log(Debug_1.Debug.toString(this.allSlots[columnIndex][rowIndex]));
+	            }
+	            else
+	                break;
+	        }
+	        console.log('bottom_left: ' + bottom_left);
+	        console.log('> left');
+	        var left = 0;
+	        for (var columnIndex = column_x_row_coinPosition[0] - 1; columnIndex > column_x_row_coinPosition[0] - 4
+	            && columnIndex >= 0; columnIndex--) {
+	            if (this.allSlots[columnIndex][column_x_row_coinPosition[1]] === activeCoinType) {
+	                left = left + 1;
+	                console.log(Debug_1.Debug.toString(this.allSlots[columnIndex][column_x_row_coinPosition[1]]));
+	            }
+	            else
+	                break;
+	        }
+	        console.log('left: ' + left);
+	        console.log('> top_left');
+	        var top_left = 0;
+	        for (var columnIndex = column_x_row_coinPosition[0] - 1, rowIndex = column_x_row_coinPosition[1] + 1; columnIndex > column_x_row_coinPosition[0] - 4
+	            && columnIndex >= 0
+	            && rowIndex < column_x_row_coinPosition[1] + 4
+	            && rowIndex < this.row_x_column[0]; columnIndex--, rowIndex++) {
+	            if (this.allSlots[columnIndex][rowIndex] === activeCoinType) {
+	                top_left = top_left + 1;
+	                console.log(Debug_1.Debug.toString(this.allSlots[columnIndex][rowIndex]));
+	            }
+	            else
+	                break;
+	        }
+	        console.log('top_left: ' + top_left);
+	        var isWin = bottom >= 3
+	            || top_right + bottom_left >= 3
+	            || right + left >= 3
+	            || bottom_right + top_left >= 3;
+	        if (isWin) {
+	            this.winner = this.coinToPlayerSlot(activeCoinType);
+	            console.log("WIN: " + Debug_1.Debug.toString_player(this.winner));
+	        }
 	        console.log('------');
 	    };
 	    return CoinsTracker;
