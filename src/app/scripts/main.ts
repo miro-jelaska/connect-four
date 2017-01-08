@@ -11,8 +11,11 @@ function onLoad(): void {
             "./app/images/board.png",
             "./app/images/coin-red.png",
             "./app/images/coin-blue.png",
+            "./app/images/new-game.png",
             "./app/images/pointer-blue.png",
             "./app/images/pointer-red.png",
+            "./app/images/turn-blue.png",
+            "./app/images/turn-red.png"
         ])
         .load(setup);
 

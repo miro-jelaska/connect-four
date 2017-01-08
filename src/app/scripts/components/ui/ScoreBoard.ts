@@ -23,9 +23,9 @@ export class ScoreBoard implements RenderableElement{
 
         stage.addChild(this.buildBackground());
         stage.addChild(this.buildScoreCricle(Player.Blue));
-        stage.addChild(this.scoreBlueText);
+        stage.addChild(scoreBlueText);
         stage.addChild(this.buildScoreCricle(Player.Red));
-        stage.addChild(this.scoreRedText);
+        stage.addChild(scoreRedText);
 
         return stage;
     }

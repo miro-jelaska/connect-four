@@ -3,7 +3,7 @@ import {Player} from "../utilities/Player";
 
 export module Debug
 {
-    export function toString(slot: CoinSlot):string {
+    export function toString_coinSlot(slot: CoinSlot):string {
         return slot == CoinSlot.Empty
             ? 'Empty' :
             (slot == CoinSlot.Blue ? 'blue' : 'red');

@@ -28,11 +28,13 @@ export class GameBoard implements RenderableElement, UpdateableElement{
     private readonly allCoins: Coin[] = [];
 
     private activePlayer: Player;
-    private readonly onPlayerWon: (player:Player) => void;
+    private readonly onGameOver: (player?:Player) => void;
+    private readonly onActivePlayerChange: (player:Player) => void;
 
-    constructor(activePlayer: Player, onPlayerWon: (player:Player) => void){
+    constructor(activePlayer: Player, onGameOver: (player?:Player) => void, onActivePlayerChange: (player:Player) => void){
         this.activePlayer = activePlayer;
-        this.onPlayerWon = onPlayerWon;
+        this.onGameOver = onGameOver;
+        this.onActivePlayerChange = onActivePlayerChange;
         this.coinsTracker = new CoinsTracker(GameBoard.ROWxCOLUMN);
 
         for(var columnIndex = 0; columnIndex < GameBoard.ROWxCOLUMN[1]; columnIndex++){
@@ -90,7 +92,9 @@ export class GameBoard implements RenderableElement, UpdateableElement{
                         this.allCoins
                             .find((coin: Coin) => coin.rowAndColumnIndex[0] === coinIndexPosition[0] && coin.rowAndColumnIndex[1] === coinIndexPosition[1])
                             .markAsWinningCoin());
-                this.onPlayerWon(this.coinsTracker.getWinner());
+                this.onGameOver(this.coinsTracker.getWinner());
+            } else if(this.coinsTracker.isTie()){
+                this.onGameOver(null);
             } else {
                 this.switchActivePlayer();
             }
@@ -103,6 +107,7 @@ export class GameBoard implements RenderableElement, UpdateableElement{
             this.activePlayer === Player.Blue
             ? Player.Red
             : Player.Blue;
+        this.onActivePlayerChange(this.activePlayer);
     }
 
     public update(): void {

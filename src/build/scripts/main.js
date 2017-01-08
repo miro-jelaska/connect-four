@@ -54,8 +54,11 @@
 	        "./app/images/board.png",
 	        "./app/images/coin-red.png",
 	        "./app/images/coin-blue.png",
+	        "./app/images/new-game.png",
 	        "./app/images/pointer-blue.png",
 	        "./app/images/pointer-red.png",
+	        "./app/images/turn-blue.png",
+	        "./app/images/turn-red.png"
 	    ])
 	        .load(setup);
 	    function setup() {
@@ -37802,6 +37805,7 @@
 	var GameBoard_1 = __webpack_require__(181);
 	var ScoreBoard_1 = __webpack_require__(189);
 	var Player_1 = __webpack_require__(184);
+	var ActivityBar_1 = __webpack_require__(191);
 	var Game = (function () {
 	    function Game(rendered) {
 	        var _this = this;
@@ -37809,7 +37813,8 @@
 	        this.activePlayer = this.playerWhoIsActiveFirst;
 	        this.renderer = rendered;
 	        this.scoreBoard = new ScoreBoard_1.ScoreBoard();
-	        this.gameBoard = new GameBoard_1.GameBoard(this.activePlayer, function (player) { return _this.scoreBoard.playerWon(player); });
+	        this.gameBoard = new GameBoard_1.GameBoard(this.activePlayer, function (player) { return _this.onGameOver(player); }, function (player) { return _this.onActivePlayerChange(player); });
+	        this.activityBar = new ActivityBar_1.ActivityBar(this.activePlayer, function () { return _this.onNewGameRequest(); });
 	    }
 	    Game.prototype.update = function () {
 	        this.gameBoard.update();
@@ -37819,10 +37824,23 @@
 	        [
 	            this.gameBoard,
 	            this.scoreBoard,
+	            this.activityBar
 	        ]
 	            .map(function (element) { return element.getStage(); })
 	            .forEach(function (stage) { return rootStage.addChild(stage); });
 	        this.renderer.render(rootStage);
+	    };
+	    Game.prototype.onGameOver = function (playerThatWon) {
+	        if (playerThatWon !== null) {
+	            this.scoreBoard.playerWon(playerThatWon);
+	        }
+	        this.activityBar.onGameOver();
+	    };
+	    Game.prototype.onActivePlayerChange = function (player) {
+	        this.activityBar.onActivePlayerChange(player);
+	    };
+	    Game.prototype.onNewGameRequest = function () {
+	        console.log('Start new game.');
 	    };
 	    return Game;
 	}());
@@ -37841,13 +37859,14 @@
 	var Coin_1 = __webpack_require__(183);
 	var CoinsTracker_1 = __webpack_require__(186);
 	var GameBoard = (function () {
-	    function GameBoard(activePlayer, onPlayerWon) {
+	    function GameBoard(activePlayer, onGameOver, onActivePlayerChange) {
 	        var _this = this;
 	        this.selectionStripes = [];
 	        this.selectionPointers = [];
 	        this.allCoins = [];
 	        this.activePlayer = activePlayer;
-	        this.onPlayerWon = onPlayerWon;
+	        this.onGameOver = onGameOver;
+	        this.onActivePlayerChange = onActivePlayerChange;
 	        this.coinsTracker = new CoinsTracker_1.CoinsTracker(GameBoard.ROWxCOLUMN);
 	        var _loop_1 = function () {
 	            var selectionStripe = new SelectionStripe_1.SelectionStripe(columnIndex);
@@ -37901,7 +37920,10 @@
 	                        .find(function (coin) { return coin.rowAndColumnIndex[0] === coinIndexPosition[0] && coin.rowAndColumnIndex[1] === coinIndexPosition[1]; })
 	                        .markAsWinningCoin();
 	                });
-	                this.onPlayerWon(this.coinsTracker.getWinner());
+	                this.onGameOver(this.coinsTracker.getWinner());
+	            }
+	            else if (this.coinsTracker.isTie()) {
+	                this.onGameOver(null);
 	            }
 	            else {
 	                this.switchActivePlayer();
@@ -37913,6 +37935,7 @@
 	            this.activePlayer === Player_1.Player.Blue
 	                ? Player_1.Player.Red
 	                : Player_1.Player.Blue;
+	        this.onActivePlayerChange(this.activePlayer);
 	    };
 	    GameBoard.prototype.update = function () {
 	        this.allCoins.forEach(function (coin) { return coin.update(); });
@@ -38185,7 +38208,6 @@
 	"use strict";
 	var GameBoard_1 = __webpack_require__(181);
 	var Player_1 = __webpack_require__(184);
-	var Debug_1 = __webpack_require__(187);
 	var CoinSlot;
 	(function (CoinSlot) {
 	    CoinSlot[CoinSlot["Empty"] = 0] = "Empty";
@@ -38260,98 +38282,69 @@
 	    };
 	    CoinsTracker.prototype.checkIsWinningMove = function (column_x_row_coinPosition) {
 	        var activeCoinType = this.allSlots[column_x_row_coinPosition[0]][column_x_row_coinPosition[1]];
-	        console.log('ActiveCoin: ' + Debug_1.Debug.toString(activeCoinType));
-	        console.log('> top_right');
 	        var adjacentCoins_top_right = [];
 	        for (var columnIndex = column_x_row_coinPosition[0] + 1, rowIndex = column_x_row_coinPosition[1] + 1; columnIndex < column_x_row_coinPosition[0] + 4
 	            && columnIndex < this.row_x_column[1]
 	            && rowIndex < column_x_row_coinPosition[1] + 4
 	            && rowIndex < this.row_x_column[0]; columnIndex++, rowIndex++) {
-	            if (this.allSlots[columnIndex][rowIndex] === activeCoinType) {
+	            if (this.allSlots[columnIndex][rowIndex] === activeCoinType)
 	                adjacentCoins_top_right.push([columnIndex, rowIndex]);
-	                console.log(Debug_1.Debug.toString(this.allSlots[columnIndex][rowIndex]));
-	            }
 	            else
 	                break;
 	        }
-	        console.log('top_right: ' + adjacentCoins_top_right);
-	        console.log('> right');
 	        var adjacentCoins_right = [];
 	        for (var columnIndex = column_x_row_coinPosition[0] + 1; columnIndex < column_x_row_coinPosition[0] + 4
 	            && columnIndex < this.row_x_column[1]; columnIndex++) {
-	            if (this.allSlots[columnIndex][column_x_row_coinPosition[1]] === activeCoinType) {
+	            if (this.allSlots[columnIndex][column_x_row_coinPosition[1]] === activeCoinType)
 	                adjacentCoins_right.push([columnIndex, column_x_row_coinPosition[1]]);
-	                console.log(Debug_1.Debug.toString(this.allSlots[columnIndex][column_x_row_coinPosition[1]]));
-	            }
 	            else
 	                break;
 	        }
-	        console.log('right: ' + adjacentCoins_right);
-	        console.log('> top_right');
 	        var adjacentCoins_bottom_right = [];
 	        for (var columnIndex = column_x_row_coinPosition[0] + 1, rowIndex = column_x_row_coinPosition[1] - 1; columnIndex < column_x_row_coinPosition[0] + 4
 	            && columnIndex < this.row_x_column[1]
 	            && rowIndex > column_x_row_coinPosition[1] - 4
 	            && rowIndex >= 0; columnIndex++, rowIndex--) {
-	            if (this.allSlots[columnIndex][rowIndex] === activeCoinType) {
+	            if (this.allSlots[columnIndex][rowIndex] === activeCoinType)
 	                adjacentCoins_bottom_right.push([columnIndex, rowIndex]);
-	                console.log(Debug_1.Debug.toString(this.allSlots[columnIndex][rowIndex]));
-	            }
 	            else
 	                break;
 	        }
-	        console.log('bottom_right: ' + adjacentCoins_bottom_right);
-	        console.log('> down');
 	        var adjacentCoins_bottom = [];
 	        for (var rowIndex = column_x_row_coinPosition[1] - 1; rowIndex > column_x_row_coinPosition[1] - 4 && rowIndex >= 0; rowIndex--) {
-	            if (this.allSlots[column_x_row_coinPosition[0]][rowIndex] === activeCoinType) {
+	            if (this.allSlots[column_x_row_coinPosition[0]][rowIndex] === activeCoinType)
 	                adjacentCoins_bottom.push([column_x_row_coinPosition[0], rowIndex]);
-	                console.log(Debug_1.Debug.toString(this.allSlots[column_x_row_coinPosition[0]][rowIndex]));
-	            }
 	            else
 	                break;
 	        }
-	        console.log('down: ' + adjacentCoins_bottom);
-	        console.log('> top_right');
 	        var adjacentCoins_bottom_left = [];
 	        for (var columnIndex = column_x_row_coinPosition[0] - 1, rowIndex = column_x_row_coinPosition[1] - 1; columnIndex > column_x_row_coinPosition[0] - 4
 	            && columnIndex >= 0
 	            && rowIndex > column_x_row_coinPosition[1] - 4
 	            && rowIndex >= 0; columnIndex--, rowIndex--) {
-	            if (this.allSlots[columnIndex][rowIndex] === activeCoinType) {
+	            if (this.allSlots[columnIndex][rowIndex] === activeCoinType)
 	                adjacentCoins_bottom_left.push([columnIndex, rowIndex]);
-	                console.log(Debug_1.Debug.toString(this.allSlots[columnIndex][rowIndex]));
-	            }
 	            else
 	                break;
 	        }
-	        console.log('bottom_left: ' + adjacentCoins_bottom_left);
-	        console.log('> left');
 	        var adjacentCoins_left = [];
 	        for (var columnIndex = column_x_row_coinPosition[0] - 1; columnIndex > column_x_row_coinPosition[0] - 4
 	            && columnIndex >= 0; columnIndex--) {
-	            if (this.allSlots[columnIndex][column_x_row_coinPosition[1]] === activeCoinType) {
+	            if (this.allSlots[columnIndex][column_x_row_coinPosition[1]] === activeCoinType)
 	                adjacentCoins_left.push([columnIndex, column_x_row_coinPosition[1]]);
-	                console.log(Debug_1.Debug.toString(this.allSlots[columnIndex][column_x_row_coinPosition[1]]));
-	            }
 	            else
 	                break;
 	        }
-	        console.log('left: ' + adjacentCoins_left);
-	        console.log('> top_left');
 	        var adjacentCoins_top_left = [];
 	        for (var columnIndex = column_x_row_coinPosition[0] - 1, rowIndex = column_x_row_coinPosition[1] + 1; columnIndex > column_x_row_coinPosition[0] - 4
 	            && columnIndex >= 0
 	            && rowIndex < column_x_row_coinPosition[1] + 4
 	            && rowIndex < this.row_x_column[0]; columnIndex--, rowIndex++) {
-	            if (this.allSlots[columnIndex][rowIndex] === activeCoinType) {
+	            if (this.allSlots[columnIndex][rowIndex] === activeCoinType)
 	                adjacentCoins_top_left.push([columnIndex, rowIndex]);
-	                console.log(Debug_1.Debug.toString(this.allSlots[columnIndex][rowIndex]));
-	            }
 	            else
 	                break;
 	        }
-	        console.log('top_left: ' + adjacentCoins_top_left);
 	        var isWin;
 	        var winnerCoins = [];
 	        if (adjacentCoins_bottom.length >= 3) {
@@ -38377,10 +38370,7 @@
 	            winnerCoins.push(column_x_row_coinPosition);
 	            this.winnerCoinPositions = winnerCoins;
 	            this.winner = this.coinToPlayerSlot(activeCoinType);
-	            console.log("WIN: " + Debug_1.Debug.toString_player(this.winner));
-	            console.log("this.winnerCoins: " + this.winnerCoinPositions);
 	        }
-	        console.log('------');
 	    };
 	    return CoinsTracker;
 	}());
@@ -38388,28 +38378,7 @@
 
 
 /***/ },
-/* 187 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var CoinsTracker_1 = __webpack_require__(186);
-	var Player_1 = __webpack_require__(184);
-	var Debug;
-	(function (Debug) {
-	    function toString(slot) {
-	        return slot == CoinsTracker_1.CoinSlot.Empty
-	            ? 'Empty' :
-	            (slot == CoinsTracker_1.CoinSlot.Blue ? 'blue' : 'red');
-	    }
-	    Debug.toString = toString;
-	    function toString_player(player) {
-	        return player === Player_1.Player.Blue ? 'Blue' : 'Red';
-	    }
-	    Debug.toString_player = toString_player;
-	})(Debug = exports.Debug || (exports.Debug = {}));
-
-
-/***/ },
+/* 187 */,
 /* 188 */,
 /* 189 */
 /***/ function(module, exports, __webpack_require__) {
@@ -38430,9 +38399,9 @@
 	        var stage = new PIXI.Container();
 	        stage.addChild(this.buildBackground());
 	        stage.addChild(this.buildScoreCricle(Player_1.Player.Blue));
-	        stage.addChild(this.scoreBlueText);
+	        stage.addChild(scoreBlueText);
 	        stage.addChild(this.buildScoreCricle(Player_1.Player.Red));
-	        stage.addChild(this.scoreRedText);
+	        stage.addChild(scoreRedText);
 	        return stage;
 	    };
 	    ScoreBoard.prototype.buildBackground = function () {
@@ -38503,6 +38472,52 @@
 	    ColorScheme[ColorScheme["Yellow"] = 16756756] = "Yellow";
 	    ColorScheme[ColorScheme["LightGray"] = 15856370] = "LightGray";
 	})(ColorScheme = exports.ColorScheme || (exports.ColorScheme = {}));
+
+
+/***/ },
+/* 191 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var Player_1 = __webpack_require__(184);
+	var GameBoard_1 = __webpack_require__(181);
+	var ScoreBoard_1 = __webpack_require__(189);
+	var ActivityBar = (function () {
+	    function ActivityBar(initialTurn, onNewGameRequest) {
+	        var _this = this;
+	        this.onNewGameRequest = onNewGameRequest;
+	        this.bluePlayerTurnStatus = new PIXI.Container();
+	        var bluePlayerRTurnSprite = new PIXI.Sprite(PIXI.loader.resources["./app/images/turn-blue.png"].texture);
+	        bluePlayerRTurnSprite.position.y = ActivityBar.CANVAS_MARGIN_TOP;
+	        this.bluePlayerTurnStatus.addChild(bluePlayerRTurnSprite);
+	        this.redPlayerTurnStatus = new PIXI.Container();
+	        var redPlayerRTurnSprite = new PIXI.Sprite(PIXI.loader.resources["./app/images/turn-red.png"].texture);
+	        redPlayerRTurnSprite.position.y = ActivityBar.CANVAS_MARGIN_TOP;
+	        this.redPlayerTurnStatus.addChild(redPlayerRTurnSprite);
+	        this.newGameButton = new PIXI.Container();
+	        var newGameButtonSprite = new PIXI.Sprite(PIXI.loader.resources["./app/images/new-game.png"].texture);
+	        newGameButtonSprite.position.y = ActivityBar.CANVAS_MARGIN_TOP;
+	        newGameButtonSprite.interactive = true;
+	        newGameButtonSprite.on('click', function () { return _this.onNewGameRequest(); });
+	        this.newGameButton.addChild(newGameButtonSprite);
+	        this.onActivePlayerChange(initialTurn);
+	    }
+	    ActivityBar.prototype.onActivePlayerChange = function (player) {
+	        if (player === Player_1.Player.Blue)
+	            this.activeStage = this.bluePlayerTurnStatus;
+	        else
+	            this.activeStage = this.redPlayerTurnStatus;
+	    };
+	    ActivityBar.prototype.onGameOver = function () {
+	        this.activeStage = this.newGameButton;
+	    };
+	    ActivityBar.prototype.getStage = function () {
+	        return this.activeStage;
+	    };
+	    return ActivityBar;
+	}());
+	ActivityBar.CANVAS_MARGIN_TOP = GameBoard_1.GameBoard.BOARD_MARGIN_TOP + GameBoard_1.GameBoard.BOARD_HEIGHT + ScoreBoard_1.ScoreBoard.HEIGHT;
+	exports.ActivityBar = ActivityBar;
 
 
 /***/ }
