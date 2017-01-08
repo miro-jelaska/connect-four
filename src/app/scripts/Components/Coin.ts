@@ -5,15 +5,20 @@ import Sprite = PIXI.Sprite;
 import Container = PIXI.Container;
 
 export class Coin implements RenderableElement, UpdateableElement{
-    public static readonly DROP_VELOCITY = 2;
+    public static readonly DROP_VELOCITY = 4.5;
     public static readonly DIAMETER = 60;
+    public static readonly DROP_START_Y = 20;
 
     private readonly player: Player;
+    private readonly finalPosition: PIXI.Point;
     private readonly sprite: Sprite;
     private readonly stage: Container;
-    constructor(player: Player, x: number) {
+
+    private isAtFinalPosition: boolean = false;
+
+    constructor(player: Player, finalPosition: PIXI.Point) {
         this.player = player;
-        console.log('new coin');
+        this.finalPosition = finalPosition;
         let texture =
             player == Player.Blue
             ? PIXI.loader.resources["./app/images/coin-blue.png"].texture
@@ -22,8 +27,8 @@ export class Coin implements RenderableElement, UpdateableElement{
         sprite.width = Coin.DIAMETER;
         sprite.height = Coin.DIAMETER;
         sprite.anchor.set(0.5, 0.5);
-        sprite.position.x = x;
-        sprite.position.y = 30;
+        sprite.position.x = finalPosition.x;
+        sprite.position.y = Coin.DROP_START_Y;
         this.sprite = sprite;
 
         let stage = new PIXI.Container();
@@ -32,7 +37,13 @@ export class Coin implements RenderableElement, UpdateableElement{
     }
 
     public update(): void {
+        if(this.isAtFinalPosition) return;
+
         this.sprite.position.y = this.sprite.position.y + Coin.DROP_VELOCITY;
+        if(this.sprite.position.y >= this.finalPosition.y) {
+            this.sprite.position.y = this.finalPosition.y;
+            this.isAtFinalPosition = true;
+        }
     }
     public getStage(): PIXI.Container {
         return this.stage;

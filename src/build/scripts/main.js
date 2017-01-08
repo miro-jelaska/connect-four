@@ -37867,8 +37867,7 @@
 	        this.activePlayer = player;
 	    };
 	    GameBoard.prototype.dropCoin = function (columnIndex) {
-	        var x = GameBoard.getColumnCenter(columnIndex);
-	        var coin = new Coin_1.Coin(this.activePlayer, x);
+	        var coin = new Coin_1.Coin(this.activePlayer, GameBoard.getCenter(0, columnIndex));
 	        this.allCoins.push(coin);
 	    };
 	    GameBoard.prototype.onSelectionStripeMouseOver = function (stripeIndex) {
@@ -37910,7 +37909,7 @@
 	        return GameBoard.BOARD_MARGIN_TOP
 	            + GameBoard.BOARD_PADDING
 	            + Coin_1.Coin.DIAMETER / 2
-	            + (GameBoard.ROWxCOLUMN[0] - row) * (Coin_1.Coin.DIAMETER + GameBoard.COIN_MARGIN);
+	            + (GameBoard.ROWxCOLUMN[0] - 1 - row) * (Coin_1.Coin.DIAMETER + GameBoard.COIN_MARGIN);
 	    };
 	    return GameBoard;
 	}());
@@ -38115,9 +38114,10 @@
 	"use strict";
 	var Player_1 = __webpack_require__(184);
 	var Coin = (function () {
-	    function Coin(player, x) {
+	    function Coin(player, finalPosition) {
+	        this.isAtFinalPosition = false;
 	        this.player = player;
-	        console.log('new coin');
+	        this.finalPosition = finalPosition;
 	        var texture = player == Player_1.Player.Blue
 	            ? PIXI.loader.resources["./app/images/coin-blue.png"].texture
 	            : PIXI.loader.resources["./app/images/coin-red.png"].texture;
@@ -38125,23 +38125,30 @@
 	        sprite.width = Coin.DIAMETER;
 	        sprite.height = Coin.DIAMETER;
 	        sprite.anchor.set(0.5, 0.5);
-	        sprite.position.x = x;
-	        sprite.position.y = 30;
+	        sprite.position.x = finalPosition.x;
+	        sprite.position.y = Coin.DROP_START_Y;
 	        this.sprite = sprite;
 	        var stage = new PIXI.Container();
 	        stage.addChild(sprite);
 	        this.stage = stage;
 	    }
 	    Coin.prototype.update = function () {
+	        if (this.isAtFinalPosition)
+	            return;
 	        this.sprite.position.y = this.sprite.position.y + Coin.DROP_VELOCITY;
+	        if (this.sprite.position.y >= this.finalPosition.y) {
+	            this.sprite.position.y = this.finalPosition.y;
+	            this.isAtFinalPosition = true;
+	        }
 	    };
 	    Coin.prototype.getStage = function () {
 	        return this.stage;
 	    };
 	    return Coin;
 	}());
-	Coin.DROP_VELOCITY = 2;
+	Coin.DROP_VELOCITY = 4.5;
 	Coin.DIAMETER = 60;
+	Coin.DROP_START_Y = 20;
 	exports.Coin = Coin;
 
 

@@ -10,6 +10,7 @@ import {SelectionPointer} from "./SelectionPointer";
 import {Player} from "../Utilities/Player";
 import {Coin} from "./Coin";
 import {UpdateableElement} from "../Utilities/UpdateableElement";
+import {Game} from "../Game";
 
 export class GameBoard implements RenderableElement, UpdateableElement{
     public static readonly ROWxCOLUMN:[number, number] = [6, 7];
@@ -54,8 +55,7 @@ export class GameBoard implements RenderableElement, UpdateableElement{
     }
 
     private dropCoin(columnIndex: number): void {
-        let x = GameBoard.getColumnCenter(columnIndex);
-        let coin = new Coin(this.activePlayer, x);
+        let coin = new Coin(this.activePlayer, GameBoard.getCenter(0, columnIndex));
         this.allCoins.push(coin);
     }
 
@@ -107,6 +107,6 @@ export class GameBoard implements RenderableElement, UpdateableElement{
         return GameBoard.BOARD_MARGIN_TOP
             + GameBoard.BOARD_PADDING
             + Coin.DIAMETER/2
-            + (GameBoard.ROWxCOLUMN[0] - row)*(Coin.DIAMETER + GameBoard.COIN_MARGIN);
+            + (GameBoard.ROWxCOLUMN[0] - 1 - row)*(Coin.DIAMETER + GameBoard.COIN_MARGIN);
     }
 }
