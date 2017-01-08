@@ -37800,15 +37800,16 @@
 
 	"use strict";
 	var GameBoard_1 = __webpack_require__(181);
-	var ScoreBoard_1 = __webpack_require__(188);
+	var ScoreBoard_1 = __webpack_require__(189);
 	var Player_1 = __webpack_require__(184);
 	var Game = (function () {
 	    function Game(rendered) {
+	        var _this = this;
 	        this.playerWhoIsActiveFirst = Player_1.Player.Blue;
 	        this.activePlayer = this.playerWhoIsActiveFirst;
 	        this.renderer = rendered;
-	        this.gameBoard = new GameBoard_1.GameBoard(this.activePlayer);
 	        this.scoreBoard = new ScoreBoard_1.ScoreBoard();
+	        this.gameBoard = new GameBoard_1.GameBoard(this.activePlayer, function (player) { return _this.scoreBoard.playerWon(player); });
 	    }
 	    Game.prototype.update = function () {
 	        this.gameBoard.update();
@@ -37840,12 +37841,13 @@
 	var Coin_1 = __webpack_require__(183);
 	var CoinsTracker_1 = __webpack_require__(186);
 	var GameBoard = (function () {
-	    function GameBoard(activePlayer) {
+	    function GameBoard(activePlayer, onPlayerWon) {
 	        var _this = this;
 	        this.selectionStripes = [];
 	        this.selectionPointers = [];
 	        this.allCoins = [];
 	        this.activePlayer = activePlayer;
+	        this.onPlayerWon = onPlayerWon;
 	        this.coinsTracker = new CoinsTracker_1.CoinsTracker(GameBoard.ROWxCOLUMN);
 	        var _loop_1 = function () {
 	            var selectionStripe = new SelectionStripe_1.SelectionStripe(columnIndex);
@@ -37892,7 +37894,6 @@
 	        var _this = this;
 	        if (this.coinsTracker.isEmptySlotAvailable(stripeIndex) && !this.coinsTracker.isGameOver()) {
 	            this.dropCoin(stripeIndex);
-	            this.switchActivePlayer();
 	            if (this.coinsTracker.isWin()) {
 	                this.coinsTracker.getWinningCoinPositions()
 	                    .forEach(function (coinIndexPosition) {
@@ -37900,6 +37901,10 @@
 	                        .find(function (coin) { return coin.rowAndColumnIndex[0] === coinIndexPosition[0] && coin.rowAndColumnIndex[1] === coinIndexPosition[1]; })
 	                        .markAsWinningCoin();
 	                });
+	                this.onPlayerWon(this.coinsTracker.getWinner());
+	            }
+	            else {
+	                this.switchActivePlayer();
 	            }
 	        }
 	    };
@@ -38405,35 +38410,99 @@
 
 
 /***/ },
-/* 188 */
+/* 188 */,
+/* 189 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	__webpack_require__(1);
+	var GameBoard_1 = __webpack_require__(181);
+	var Settings_1 = __webpack_require__(179);
+	var ColorScheme_1 = __webpack_require__(190);
+	var Player_1 = __webpack_require__(184);
 	var ScoreBoard = (function () {
 	    function ScoreBoard() {
+	        this.scoreBlueText = this.buildScoreText(Player_1.Player.Blue, 0);
+	        this.scoreRedText = this.buildScoreText(Player_1.Player.Red, 0);
+	        this.stage = this.buildStage(this.scoreBlueText, this.scoreRedText);
 	    }
-	    ScoreBoard.prototype.getStage = function () {
+	    ScoreBoard.prototype.buildStage = function (scoreBlueText, scoreRedText) {
 	        var stage = new PIXI.Container();
-	        var graphics = new PIXI.Graphics();
-	        graphics.beginFill(0xBEDB39, 0.01);
-	        graphics.drawRect(0, 0, 50, 50);
-	        graphics.endFill();
-	        graphics.interactive = true;
-	        graphics.on("mouseover", function () {
-	            console.log('success');
-	            graphics.scale.set(2, 2);
-	        });
-	        graphics.on("mouseout", function () {
-	            console.log('out');
-	            graphics.scale.set(1, 1);
-	        });
-	        stage.addChild(graphics);
+	        stage.addChild(this.buildBackground());
+	        stage.addChild(this.buildScoreCricle(Player_1.Player.Blue));
+	        stage.addChild(this.scoreBlueText);
+	        stage.addChild(this.buildScoreCricle(Player_1.Player.Red));
+	        stage.addChild(this.scoreRedText);
 	        return stage;
+	    };
+	    ScoreBoard.prototype.buildBackground = function () {
+	        var background = new PIXI.Graphics();
+	        background.beginFill(ColorScheme_1.ColorScheme.LightGray);
+	        background.drawRect(0, ScoreBoard.CANVAS_MARGIN_TOP, Settings_1.Setting.CANVAS_WIDTH, ScoreBoard.HEIGHT);
+	        background.endFill();
+	        return background;
+	    };
+	    ScoreBoard.prototype.buildScoreCricle = function (player) {
+	        var scoreCircle = new PIXI.Graphics();
+	        var circleColor = player === Player_1.Player.Blue
+	            ? ColorScheme_1.ColorScheme.DarkBlue
+	            : ColorScheme_1.ColorScheme.DarkRed;
+	        scoreCircle.beginFill(circleColor);
+	        var xPosition = player === Player_1.Player.Blue
+	            ? 50
+	            : ScoreBoard.WIDTH - 50;
+	        scoreCircle.drawCircle(xPosition, ScoreBoard.CANVAS_MARGIN_TOP + ScoreBoard.HEIGHT / 2, 20);
+	        return scoreCircle;
+	    };
+	    ScoreBoard.prototype.buildScoreText = function (player, score) {
+	        var xPosition = player === Player_1.Player.Blue
+	            ? 50
+	            : ScoreBoard.WIDTH - 50;
+	        var scoreText = new PIXI.Text(score.toString(), {
+	            fontFamily: 'Arial',
+	            fontSize: '20px',
+	            fill: '#FFFFFF'
+	        });
+	        scoreText.x = xPosition - 5;
+	        scoreText.y = ScoreBoard.CANVAS_MARGIN_TOP + 23;
+	        return scoreText;
+	    };
+	    ScoreBoard.prototype.playerWon = function (player) {
+	        if (player === Player_1.Player.Blue) {
+	            var currentScoreBlue = Number(this.scoreBlueText.text);
+	            this.scoreBlueText.text = (currentScoreBlue + 1).toString();
+	        }
+	        else {
+	            var currentScoreRed = Number(this.scoreRedText.text);
+	            this.scoreRedText.text = (currentScoreRed + 1).toString();
+	        }
+	    };
+	    ScoreBoard.prototype.getStage = function () {
+	        return this.stage;
 	    };
 	    return ScoreBoard;
 	}());
+	ScoreBoard.CANVAS_MARGIN_TOP = GameBoard_1.GameBoard.BOARD_MARGIN_TOP + GameBoard_1.GameBoard.BOARD_HEIGHT;
+	ScoreBoard.HEIGHT = 70;
+	ScoreBoard.WIDTH = Settings_1.Setting.CANVAS_WIDTH;
 	exports.ScoreBoard = ScoreBoard;
+
+
+/***/ },
+/* 190 */
+/***/ function(module, exports) {
+
+	"use strict";
+	var ColorScheme;
+	(function (ColorScheme) {
+	    ColorScheme[ColorScheme["LightRed"] = 16669740] = "LightRed";
+	    ColorScheme[ColorScheme["DarkRed"] = 14693149] = "DarkRed";
+	    ColorScheme[ColorScheme["LightBlue"] = 4045539] = "LightBlue";
+	    ColorScheme[ColorScheme["DarkBlue"] = 886729] = "DarkBlue";
+	    ColorScheme[ColorScheme["Brown"] = 7628634] = "Brown";
+	    ColorScheme[ColorScheme["Yellow"] = 16756756] = "Yellow";
+	    ColorScheme[ColorScheme["LightGray"] = 15856370] = "LightGray";
+	})(ColorScheme = exports.ColorScheme || (exports.ColorScheme = {}));
 
 
 /***/ }

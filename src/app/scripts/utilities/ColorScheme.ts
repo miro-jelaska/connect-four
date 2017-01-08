@@ -4,5 +4,6 @@ export enum ColorScheme{
     LightBlue = 0x3DBAE3,
     DarkBlue = 0x0D87C9,
     Brown = 0x74675A,
-    Yellow = 0xFFB014
+    Yellow = 0xFFB014,
+    LightGray = 0xF1F2F2
 }

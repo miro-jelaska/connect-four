@@ -28,9 +28,11 @@ export class GameBoard implements RenderableElement, UpdateableElement{
     private readonly allCoins: Coin[] = [];
 
     private activePlayer: Player;
+    private readonly onPlayerWon: (player:Player) => void;
 
-    constructor(activePlayer: Player){
+    constructor(activePlayer: Player, onPlayerWon: (player:Player) => void){
         this.activePlayer = activePlayer;
+        this.onPlayerWon = onPlayerWon;
         this.coinsTracker = new CoinsTracker(GameBoard.ROWxCOLUMN);
 
         for(var columnIndex = 0; columnIndex < GameBoard.ROWxCOLUMN[1]; columnIndex++){
@@ -81,7 +83,6 @@ export class GameBoard implements RenderableElement, UpdateableElement{
     private onSelectionStripeMouseClick(stripeIndex: number): void {
         if(this.coinsTracker.isEmptySlotAvailable(stripeIndex) && !this.coinsTracker.isGameOver()) {
             this.dropCoin(stripeIndex);
-            this.switchActivePlayer();
 
             if(this.coinsTracker.isWin()){
                 this.coinsTracker.getWinningCoinPositions()
@@ -89,6 +90,9 @@ export class GameBoard implements RenderableElement, UpdateableElement{
                         this.allCoins
                             .find((coin: Coin) => coin.rowAndColumnIndex[0] === coinIndexPosition[0] && coin.rowAndColumnIndex[1] === coinIndexPosition[1])
                             .markAsWinningCoin());
+                this.onPlayerWon(this.coinsTracker.getWinner());
+            } else {
+                this.switchActivePlayer();
             }
         }
     }

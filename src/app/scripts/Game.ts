@@ -1,5 +1,5 @@
 import {GameBoard} from "./components/GameBoard";
-import {ScoreBoard} from "./components/ScoreBoard";
+import {ScoreBoard} from "./components/ui/ScoreBoard";
 import {RenderableElement} from "./utilities/RenderableElement";
 import {Player} from "./utilities/Player";
 export class Game {
@@ -13,9 +13,10 @@ export class Game {
 
     constructor(rendered: PIXI.CanvasRenderer | PIXI.WebGLRenderer){
         this.renderer = rendered;
-
-        this.gameBoard = new GameBoard(this.activePlayer);
         this.scoreBoard = new ScoreBoard();
+        this.gameBoard = new GameBoard(
+            this.activePlayer,
+            (player) => this.scoreBoard.playerWon(player));
     }
 
     public update(): void {
