@@ -37854,7 +37854,7 @@
 	            selectionStripe.subscribeTo_onMouseClick(function (stripeIndex) { return _this.onSelectionStripeMouseClick(stripeIndex); });
 	            this_1.selectionStripes.push(selectionStripe);
 	            var immutableColumnIndex = columnIndex;
-	            this_1.selectionPointers.push(new SelectionPointer_1.SelectionPointer(columnIndex, function () { return _this.coinsTracker.isEmptySlotAvailable(immutableColumnIndex); }));
+	            this_1.selectionPointers.push(new SelectionPointer_1.SelectionPointer(columnIndex, function () { return _this.coinsTracker.isEmptySlotAvailable(immutableColumnIndex) && !_this.coinsTracker.isGameOver(); }));
 	        };
 	        var this_1 = this;
 	        for (var columnIndex = 0; columnIndex < GameBoard.ROWxCOLUMN[1]; columnIndex++) {
@@ -38092,9 +38092,9 @@
 	var Player_1 = __webpack_require__(184);
 	var GameBoard_1 = __webpack_require__(181);
 	var SelectionPointer = (function () {
-	    function SelectionPointer(stripeIndex, isEmptySlotAvailable) {
+	    function SelectionPointer(stripeIndex, isAvailableForDrop) {
 	        this.stripeIndex = stripeIndex;
-	        this.isEmptySlotAvailable = isEmptySlotAvailable;
+	        this.isAvailableForDrop = isAvailableForDrop;
 	        this.sprite_blue = this.buildSprite(stripeIndex, Player_1.Player.Blue);
 	        this.sprite_red = this.buildSprite(stripeIndex, Player_1.Player.Red);
 	        var stage = new Container();
@@ -38117,7 +38117,7 @@
 	    };
 	    SelectionPointer.prototype.show = function (player) {
 	        this.hide();
-	        if (!this.isEmptySlotAvailable())
+	        if (!this.isAvailableForDrop())
 	            return;
 	        if (player === Player_1.Player.Blue)
 	            this.sprite_blue.visible = true;

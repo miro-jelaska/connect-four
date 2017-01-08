@@ -15,11 +15,11 @@ export class SelectionPointer implements RenderableElement {
     private readonly sprite_blue: Sprite;
     private readonly sprite_red: Sprite;
     private readonly stage: Container;
-    private readonly isEmptySlotAvailable: () => boolean;
+    private readonly isAvailableForDrop: () => boolean;
 
-    constructor(stripeIndex: number, isEmptySlotAvailable: () => boolean){
+    constructor(stripeIndex: number, isAvailableForDrop: () => boolean){
         this.stripeIndex = stripeIndex;
-        this.isEmptySlotAvailable = isEmptySlotAvailable;
+        this.isAvailableForDrop = isAvailableForDrop;
         this.sprite_blue = this.buildSprite(stripeIndex, Player.Blue);
         this.sprite_red = this.buildSprite(stripeIndex, Player.Red);
 
@@ -45,7 +45,7 @@ export class SelectionPointer implements RenderableElement {
 
     public show(player: Player): void {
         this.hide();
-        if(!this.isEmptySlotAvailable())
+        if(!this.isAvailableForDrop())
             return;
 
         if(player === Player.Blue)

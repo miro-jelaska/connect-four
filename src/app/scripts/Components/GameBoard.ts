@@ -40,7 +40,7 @@ export class GameBoard implements RenderableElement, UpdateableElement{
             selectionStripe.subscribeTo_onMouseClick((stripeIndex:number) => this.onSelectionStripeMouseClick(stripeIndex));
             this.selectionStripes.push(selectionStripe);
             let immutableColumnIndex = columnIndex;
-            this.selectionPointers.push(new SelectionPointer(columnIndex, () => this.coinsTracker.isEmptySlotAvailable(immutableColumnIndex)));
+            this.selectionPointers.push(new SelectionPointer(columnIndex, () => this.coinsTracker.isEmptySlotAvailable(immutableColumnIndex) && !this.coinsTracker.isGameOver()));
         }
 
         this.boardSprite = this.buildBoardSprite();
