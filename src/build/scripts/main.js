@@ -37789,7 +37789,9 @@
 	        for (var column = 0; column < GameBoard.ROWxCOLUMN[0]; column++) {
 	            var boardPadding = column == 0 ? 0 : GameBoard.BOARD_PADDING - GameBoard.COIN_MARGIN / 2;
 	            var isFirstOrLast = column == 0 || column == (GameBoard.ROWxCOLUMN[0] - 1);
-	            var selectionStripe = new SelectionStripe_1.SelectionStripe(boardPadding + column * widthOfStripe, GameBoard.BOARD_MARGIN_TOP, widthOfStripe + (isFirstOrLast ? GameBoard.COIN_MARGIN / 2 : 0), GameBoard.BOARD_HEIGHT);
+	            var selectionStripe = new SelectionStripe_1.SelectionStripe(column, boardPadding + column * widthOfStripe, GameBoard.BOARD_MARGIN_TOP, widthOfStripe + (isFirstOrLast ? GameBoard.COIN_MARGIN / 2 : 0), GameBoard.BOARD_HEIGHT);
+	            selectionStripe.subscribeTo_onMouseOver(this.onSelectionStripeMouseOver);
+	            selectionStripe.subscribeTo_onMouseOut(this.onSelectionStripeMouseOut);
 	            this.selectionStripes.push(selectionStripe);
 	        }
 	    }
@@ -37808,6 +37810,12 @@
 	        enumerable: true,
 	        configurable: true
 	    });
+	    GameBoard.prototype.onSelectionStripeMouseOver = function (stripeIndex) {
+	        console.log('MouseOver, I got it! index >> ' + stripeIndex);
+	    };
+	    GameBoard.prototype.onSelectionStripeMouseOut = function (stripeIndex) {
+	        console.log('MouseOut, I got it! index >> ' + stripeIndex);
+	    };
 	    GameBoard.prototype.getStage = function () {
 	        var stage = new PIXI.Container();
 	        stage.addChild(this.boardSprite);
@@ -37925,10 +37933,14 @@
 	var VisibilityLevel;
 	(function (VisibilityLevel) {
 	    VisibilityLevel[VisibilityLevel["Low"] = 0.01] = "Low";
-	    VisibilityLevel[VisibilityLevel["High"] = 0.2] = "High";
+	    VisibilityLevel[VisibilityLevel["High"] = 0.15] = "High";
 	})(VisibilityLevel || (VisibilityLevel = {}));
 	var SelectionStripe = (function () {
-	    function SelectionStripe(x, y, width, height) {
+	    function SelectionStripe(index, x, y, width, height) {
+	        this.mouseOverEventListeners = [];
+	        this.mouseOutEventListeners = [];
+	        this.mouseClickEventListeners = [];
+	        this.index = index;
 	        this.stripeRectangleParameters = [x, y, width, height];
 	        this.setStripe(VisibilityLevel.Low);
 	    }
@@ -37945,13 +37957,28 @@
 	        stripe.on('click', function () { return _this.onMouseClick(); });
 	        this.stripeGraphics = stripe;
 	    };
+	    SelectionStripe.prototype.subscribeTo_onMouseOver = function (eventListener) {
+	        this.mouseOverEventListeners.push(eventListener);
+	    };
 	    SelectionStripe.prototype.onMouseOver = function () {
-	        if (this.stripeGraphics.alpha != VisibilityLevel.High)
+	        var _this = this;
+	        if (this.stripeGraphics.alpha != VisibilityLevel.High) {
 	            this.setStripe(VisibilityLevel.High);
+	            this.mouseOverEventListeners.forEach(function (listener) { return listener(_this.index); });
+	        }
+	    };
+	    SelectionStripe.prototype.subscribeTo_onMouseOut = function (eventListener) {
+	        this.mouseOutEventListeners.push(eventListener);
 	    };
 	    SelectionStripe.prototype.onMouseOut = function () {
-	        if (this.stripeGraphics.alpha != VisibilityLevel.Low)
+	        var _this = this;
+	        if (this.stripeGraphics.alpha != VisibilityLevel.Low) {
 	            this.setStripe(VisibilityLevel.Low);
+	            this.mouseOutEventListeners.forEach(function (listener) { return listener(_this.index); });
+	        }
+	    };
+	    SelectionStripe.prototype.subscribeTo_onMouseClick = function (eventListener) {
+	        this.mouseClickEventListeners.push(eventListener);
 	    };
 	    SelectionStripe.prototype.onMouseClick = function () {
 	        console.log('click');

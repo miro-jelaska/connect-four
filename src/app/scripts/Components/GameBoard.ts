@@ -24,9 +24,12 @@ export class GameBoard implements RenderableElement{
             let boardPadding = column == 0 ? 0: GameBoard.BOARD_PADDING - GameBoard.COIN_MARGIN/2;
             let isFirstOrLast = column == 0 || column == (GameBoard.ROWxCOLUMN[0] - 1);
             let selectionStripe = new SelectionStripe(
+                column,
                 boardPadding + column*widthOfStripe, GameBoard.BOARD_MARGIN_TOP,
                 widthOfStripe + (isFirstOrLast ? GameBoard.COIN_MARGIN/2 : 0), GameBoard.BOARD_HEIGHT
             );
+            selectionStripe.subscribeTo_onMouseOver(this.onSelectionStripeMouseOver);
+            selectionStripe.subscribeTo_onMouseOut(this.onSelectionStripeMouseOut);
             this.selectionStripes.push(selectionStripe);
         }
     }
@@ -45,6 +48,14 @@ export class GameBoard implements RenderableElement{
 
         this._boardSprite = sprite;
         return sprite;
+    }
+
+    private onSelectionStripeMouseOver(stripeIndex: number){
+        console.log('MouseOver, I got it! index >> ' + stripeIndex);
+    }
+
+    private onSelectionStripeMouseOut(stripeIndex: number){
+        console.log('MouseOut, I got it! index >> ' + stripeIndex);
     }
 
 
