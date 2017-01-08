@@ -4,6 +4,7 @@ import Texture = PIXI.Texture;
 import DisplayObject = PIXI.DisplayObject;
 import Container = PIXI.Container;
 import Graphics = PIXI.Graphics;
+import {SelectionStripe} from "./SelectionStripe";
 
 
 export class GameBoard implements RenderableElement{
@@ -14,6 +15,16 @@ export class GameBoard implements RenderableElement{
     public static readonly BOARD_WIDTH = 580;
     public static readonly BOARD_HEIGHT = 500;
     public static readonly BOARD_MARGIN_TOP = 50;
+
+    private readonly selectionStripe: SelectionStripe;
+
+
+    constructor(){
+        this.selectionStripe = new SelectionStripe(
+            0, GameBoard.BOARD_MARGIN_TOP,
+            90, GameBoard.BOARD_HEIGHT
+        );
+    }
 
     private _boardSprite:PIXI.Sprite;
     private get boardSprite(): PIXI.Sprite {
@@ -34,6 +45,7 @@ export class GameBoard implements RenderableElement{
     public getStage():PIXI.Container{
         let stage = new PIXI.Container();
         stage.addChild(this.boardSprite);
+        stage.addChild(this.selectionStripe.getStage());
         return stage;
     }
 

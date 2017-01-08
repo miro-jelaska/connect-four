@@ -46,11 +46,11 @@
 
 	"use strict";
 	__webpack_require__(1);
-	var GameBoard_1 = __webpack_require__(179);
-	var ScoreBoard_1 = __webpack_require__(182);
 	var Settings_1 = __webpack_require__(181);
+	var Game_1 = __webpack_require__(183);
 	function onLoad() {
 	    var renderer = PIXI.autoDetectRenderer(Settings_1.Setting.CANVAS_WIDTH, Settings_1.Setting.CANVAS_HEIGHT, { antialias: true, transparent: true, resolution: 1 });
+	    var game = new Game_1.Game(renderer);
 	    document.body.appendChild(renderer.view);
 	    PIXI.loader
 	        .add([
@@ -61,30 +61,13 @@
 	        "./app/images/pointer-red.png",
 	    ])
 	        .load(setup);
-	    var tmpCoin;
 	    function setup() {
-	        tmpCoin = new PIXI.Sprite(PIXI.loader.resources["./app/images/coin-red.png"].texture);
-	        tmpCoin.anchor.x = 0.5;
-	        tmpCoin.anchor.y = 0.5;
-	        tmpCoin.width = 60;
-	        tmpCoin.height = 60;
-	        tmpCoin.position.set(GameBoard_1.GameBoard.getCenter(2, 0).x, GameBoard_1.GameBoard.getCenter(2, 4).y);
 	        gameLoop();
 	    }
 	    function gameLoop() {
 	        requestAnimationFrame(gameLoop);
-	        render();
-	    }
-	    function render() {
-	        var rootStage = new PIXI.Container();
-	        rootStage.addChild(tmpCoin);
-	        [
-	            new GameBoard_1.GameBoard(),
-	            new ScoreBoard_1.ScoreBoard()
-	        ]
-	            .map(function (element) { return element.getStage(); })
-	            .forEach(function (stage) { return rootStage.addChild(stage); });
-	        renderer.render(rootStage);
+	        game.update();
+	        game.render();
 	    }
 	}
 	window.onload = function () { return onLoad(); };
@@ -37798,8 +37781,10 @@
 
 	"use strict";
 	__webpack_require__(1);
+	var SelectionStripe_1 = __webpack_require__(184);
 	var GameBoard = (function () {
 	    function GameBoard() {
+	        this.selectionStripe = new SelectionStripe_1.SelectionStripe(0, GameBoard.BOARD_MARGIN_TOP, 90, GameBoard.BOARD_HEIGHT);
 	    }
 	    Object.defineProperty(GameBoard.prototype, "boardSprite", {
 	        get: function () {
@@ -37819,6 +37804,7 @@
 	    GameBoard.prototype.getStage = function () {
 	        var stage = new PIXI.Container();
 	        stage.addChild(this.boardSprite);
+	        stage.addChild(this.selectionStripe.getStage());
 	        return stage;
 	    };
 	    GameBoard.getCenter = function (row, column) {
@@ -37890,6 +37876,75 @@
 	    return ScoreBoard;
 	}());
 	exports.ScoreBoard = ScoreBoard;
+
+
+/***/ },
+/* 183 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var GameBoard_1 = __webpack_require__(179);
+	var ScoreBoard_1 = __webpack_require__(182);
+	var Game = (function () {
+	    function Game(rendered) {
+	        this.renderer = rendered;
+	        this.gameBoard = new GameBoard_1.GameBoard();
+	        this.scoreBoard = new ScoreBoard_1.ScoreBoard();
+	    }
+	    Game.prototype.update = function () {
+	    };
+	    Game.prototype.render = function () {
+	        var rootStage = new PIXI.Container();
+	        [
+	            this.gameBoard,
+	            this.scoreBoard,
+	        ]
+	            .map(function (element) { return element.getStage(); })
+	            .forEach(function (stage) { return rootStage.addChild(stage); });
+	        this.renderer.render(rootStage);
+	    };
+	    return Game;
+	}());
+	exports.Game = Game;
+
+
+/***/ },
+/* 184 */
+/***/ function(module, exports) {
+
+	"use strict";
+	var Graphics = PIXI.Graphics;
+	var Container = PIXI.Container;
+	var SelectionStripe = (function () {
+	    function SelectionStripe(x, y, width, height) {
+	        var _this = this;
+	        var stripe = new Graphics();
+	        stripe.beginFill(0x000000, 0.5);
+	        stripe.drawRect(x, y, width, height);
+	        stripe.endFill();
+	        stripe.interactive = true;
+	        stripe.on('mouseover', function () { return _this.onMouseOver(); });
+	        stripe.on('mouseout', function () { return _this.onMouseOut(); });
+	        stripe.on('click', function () { return _this.onMouseClick(); });
+	        this.stripeGraphics = stripe;
+	    }
+	    SelectionStripe.prototype.onMouseOver = function () {
+	        console.log('over');
+	    };
+	    SelectionStripe.prototype.onMouseOut = function () {
+	        console.log('out');
+	    };
+	    SelectionStripe.prototype.onMouseClick = function () {
+	        console.log('click');
+	    };
+	    SelectionStripe.prototype.getStage = function () {
+	        var stage = new Container();
+	        stage.addChild(this.stripeGraphics);
+	        return stage;
+	    };
+	    return SelectionStripe;
+	}());
+	exports.SelectionStripe = SelectionStripe;
 
 
 /***/ }
