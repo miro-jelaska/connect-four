@@ -56,7 +56,10 @@ export class GameBoard implements RenderableElement, UpdateableElement{
 
     private dropCoin(columnIndex: number): void {
         let rowAndColumnIndex = this.coinsTracker.addCoin(this.activePlayer, columnIndex);
-        let coin = new Coin(this.activePlayer, GameBoard.getCenter(rowAndColumnIndex[0], rowAndColumnIndex[1]));
+        let coin = new Coin(
+                this.activePlayer,
+                rowAndColumnIndex,
+                GameBoard.getCenter(rowAndColumnIndex[0], rowAndColumnIndex[1]));
         this.allCoins.push(coin);
     }
 
@@ -79,6 +82,14 @@ export class GameBoard implements RenderableElement, UpdateableElement{
         if(this.coinsTracker.isEmptySlotAvailable(stripeIndex) && !this.coinsTracker.isGameOver()) {
             this.dropCoin(stripeIndex);
             this.switchActivePlayer();
+
+            if(this.coinsTracker.isWin()){
+                this.coinsTracker.getWinningCoinPositions()
+                    .forEach((coinIndexPosition: [number, number]) =>
+                        this.allCoins
+                            .find((coin: Coin) => coin.rowAndColumnIndex[0] === coinIndexPosition[0] && coin.rowAndColumnIndex[1] === coinIndexPosition[1])
+                            .markAsWinningCoin());
+            }
         }
     }
 

@@ -37872,7 +37872,7 @@
 	    };
 	    GameBoard.prototype.dropCoin = function (columnIndex) {
 	        var rowAndColumnIndex = this.coinsTracker.addCoin(this.activePlayer, columnIndex);
-	        var coin = new Coin_1.Coin(this.activePlayer, GameBoard.getCenter(rowAndColumnIndex[0], rowAndColumnIndex[1]));
+	        var coin = new Coin_1.Coin(this.activePlayer, rowAndColumnIndex, GameBoard.getCenter(rowAndColumnIndex[0], rowAndColumnIndex[1]));
 	        this.allCoins.push(coin);
 	    };
 	    GameBoard.prototype.onSelectionStripeMouseOver = function (stripeIndex) {
@@ -37889,9 +37889,18 @@
 	            .hide();
 	    };
 	    GameBoard.prototype.onSelectionStripeMouseClick = function (stripeIndex) {
+	        var _this = this;
 	        if (this.coinsTracker.isEmptySlotAvailable(stripeIndex) && !this.coinsTracker.isGameOver()) {
 	            this.dropCoin(stripeIndex);
 	            this.switchActivePlayer();
+	            if (this.coinsTracker.isWin()) {
+	                this.coinsTracker.getWinningCoinPositions()
+	                    .forEach(function (coinIndexPosition) {
+	                    return _this.allCoins
+	                        .find(function (coin) { return coin.rowAndColumnIndex[0] === coinIndexPosition[0] && coin.rowAndColumnIndex[1] === coinIndexPosition[1]; })
+	                        .markAsWinningCoin();
+	                });
+	            }
 	        }
 	    };
 	    GameBoard.prototype.switchActivePlayer = function () {
@@ -38043,16 +38052,19 @@
 	"use strict";
 	var Player_1 = __webpack_require__(184);
 	var Coin = (function () {
-	    function Coin(player, finalPosition) {
+	    function Coin(player, rowAndColumnIndex, finalPosition) {
 	        this.isAtFinalPosition = false;
+	        this.isWinningCoin = false;
+	        this.rotationSpeed = 0;
 	        this.player = player;
+	        this.rowAndColumnIndex = rowAndColumnIndex;
 	        this.finalPosition = finalPosition;
 	        var texture = player === Player_1.Player.Blue
 	            ? PIXI.loader.resources["./app/images/coin-blue.png"].texture
 	            : PIXI.loader.resources["./app/images/coin-red.png"].texture;
 	        var sprite = new PIXI.Sprite(texture);
-	        sprite.width = Coin.DIAMETER;
-	        sprite.height = Coin.DIAMETER;
+	        sprite.width = Coin.DIAMETER + 2;
+	        sprite.height = Coin.DIAMETER + 2;
 	        sprite.anchor.set(0.5, 0.5);
 	        sprite.position.x = finalPosition.x;
 	        sprite.position.y = Coin.DROP_START_Y;
@@ -38061,7 +38073,19 @@
 	        stage.addChild(sprite);
 	        this.stage = stage;
 	    }
+	    Coin.prototype.markAsWinningCoin = function () {
+	        this.isWinningCoin = true;
+	    };
+	    Coin.prototype.updateRotationOfWinningCoin = function () {
+	        if (this.rotationSpeed < Coin.WINNING_COIN_MAX_ROTATION_SPEED) {
+	            this.rotationSpeed = this.rotationSpeed + Coin.WINNING_COIN_ROTATION_ACCELERATION;
+	        }
+	        this.sprite.rotation = this.sprite.rotation + this.rotationSpeed;
+	    };
 	    Coin.prototype.update = function () {
+	        if (this.isAtFinalPosition && this.isWinningCoin) {
+	            this.updateRotationOfWinningCoin();
+	        }
 	        if (this.isAtFinalPosition)
 	            return;
 	        this.sprite.position.y = this.sprite.position.y + Coin.DROP_VELOCITY;
@@ -38078,6 +38102,8 @@
 	Coin.DROP_VELOCITY = 6;
 	Coin.DIAMETER = 60;
 	Coin.DROP_START_Y = 20;
+	Coin.WINNING_COIN_ROTATION_ACCELERATION = 0.001;
+	Coin.WINNING_COIN_MAX_ROTATION_SPEED = 0.10;
 	exports.Coin = Coin;
 
 
@@ -38165,6 +38191,7 @@
 	    function CoinsTracker(boardDimensions) {
 	        this.allSlots = [];
 	        this.winner = null;
+	        this.winnerCoinPositions = [];
 	        if (boardDimensions[0] < 0 || boardDimensions[1] < 0)
 	            throw new Error('Board dimensions must be positive numbers.');
 	        this.row_x_column = boardDimensions;
@@ -38201,6 +38228,9 @@
 	    CoinsTracker.prototype.getWinner = function () {
 	        return this.winner;
 	    };
+	    CoinsTracker.prototype.getWinningCoinPositions = function () {
+	        return this.winnerCoinPositions;
+	    };
 	    CoinsTracker.prototype.isTie = function () {
 	        var thereIsAtLeastOneEmptySlot = this.allSlots
 	            .some(function (column) {
@@ -38227,103 +38257,123 @@
 	        var activeCoinType = this.allSlots[column_x_row_coinPosition[0]][column_x_row_coinPosition[1]];
 	        console.log('ActiveCoin: ' + Debug_1.Debug.toString(activeCoinType));
 	        console.log('> top_right');
-	        var top_right = 0;
+	        var adjacentCoins_top_right = [];
 	        for (var columnIndex = column_x_row_coinPosition[0] + 1, rowIndex = column_x_row_coinPosition[1] + 1; columnIndex < column_x_row_coinPosition[0] + 4
 	            && columnIndex < this.row_x_column[1]
 	            && rowIndex < column_x_row_coinPosition[1] + 4
 	            && rowIndex < this.row_x_column[0]; columnIndex++, rowIndex++) {
 	            if (this.allSlots[columnIndex][rowIndex] === activeCoinType) {
-	                top_right = top_right + 1;
+	                adjacentCoins_top_right.push([columnIndex, rowIndex]);
 	                console.log(Debug_1.Debug.toString(this.allSlots[columnIndex][rowIndex]));
 	            }
 	            else
 	                break;
 	        }
-	        console.log('top_right: ' + top_right);
+	        console.log('top_right: ' + adjacentCoins_top_right);
 	        console.log('> right');
-	        var right = 0;
+	        var adjacentCoins_right = [];
 	        for (var columnIndex = column_x_row_coinPosition[0] + 1; columnIndex < column_x_row_coinPosition[0] + 4
 	            && columnIndex < this.row_x_column[1]; columnIndex++) {
 	            if (this.allSlots[columnIndex][column_x_row_coinPosition[1]] === activeCoinType) {
-	                right = right + 1;
+	                adjacentCoins_right.push([columnIndex, column_x_row_coinPosition[1]]);
 	                console.log(Debug_1.Debug.toString(this.allSlots[columnIndex][column_x_row_coinPosition[1]]));
 	            }
 	            else
 	                break;
 	        }
-	        console.log('right: ' + right);
+	        console.log('right: ' + adjacentCoins_right);
 	        console.log('> top_right');
-	        var bottom_right = 0;
+	        var adjacentCoins_bottom_right = [];
 	        for (var columnIndex = column_x_row_coinPosition[0] + 1, rowIndex = column_x_row_coinPosition[1] - 1; columnIndex < column_x_row_coinPosition[0] + 4
 	            && columnIndex < this.row_x_column[1]
 	            && rowIndex > column_x_row_coinPosition[1] - 4
 	            && rowIndex >= 0; columnIndex++, rowIndex--) {
 	            if (this.allSlots[columnIndex][rowIndex] === activeCoinType) {
-	                bottom_right = bottom_right + 1;
+	                adjacentCoins_bottom_right.push([columnIndex, rowIndex]);
 	                console.log(Debug_1.Debug.toString(this.allSlots[columnIndex][rowIndex]));
 	            }
 	            else
 	                break;
 	        }
-	        console.log('bottom_right: ' + bottom_right);
+	        console.log('bottom_right: ' + adjacentCoins_bottom_right);
 	        console.log('> down');
-	        var bottom = 0;
+	        var adjacentCoins_bottom = [];
 	        for (var rowIndex = column_x_row_coinPosition[1] - 1; rowIndex > column_x_row_coinPosition[1] - 4 && rowIndex >= 0; rowIndex--) {
 	            if (this.allSlots[column_x_row_coinPosition[0]][rowIndex] === activeCoinType) {
-	                bottom = bottom + 1;
+	                adjacentCoins_bottom.push([column_x_row_coinPosition[0], rowIndex]);
 	                console.log(Debug_1.Debug.toString(this.allSlots[column_x_row_coinPosition[0]][rowIndex]));
 	            }
 	            else
 	                break;
 	        }
-	        console.log('down: ' + bottom);
+	        console.log('down: ' + adjacentCoins_bottom);
 	        console.log('> top_right');
-	        var bottom_left = 0;
+	        var adjacentCoins_bottom_left = [];
 	        for (var columnIndex = column_x_row_coinPosition[0] - 1, rowIndex = column_x_row_coinPosition[1] - 1; columnIndex > column_x_row_coinPosition[0] - 4
 	            && columnIndex >= 0
 	            && rowIndex > column_x_row_coinPosition[1] - 4
 	            && rowIndex >= 0; columnIndex--, rowIndex--) {
 	            if (this.allSlots[columnIndex][rowIndex] === activeCoinType) {
-	                bottom_left = bottom_left + 1;
+	                adjacentCoins_bottom_left.push([columnIndex, rowIndex]);
 	                console.log(Debug_1.Debug.toString(this.allSlots[columnIndex][rowIndex]));
 	            }
 	            else
 	                break;
 	        }
-	        console.log('bottom_left: ' + bottom_left);
+	        console.log('bottom_left: ' + adjacentCoins_bottom_left);
 	        console.log('> left');
-	        var left = 0;
+	        var adjacentCoins_left = [];
 	        for (var columnIndex = column_x_row_coinPosition[0] - 1; columnIndex > column_x_row_coinPosition[0] - 4
 	            && columnIndex >= 0; columnIndex--) {
 	            if (this.allSlots[columnIndex][column_x_row_coinPosition[1]] === activeCoinType) {
-	                left = left + 1;
+	                adjacentCoins_left.push([columnIndex, column_x_row_coinPosition[1]]);
 	                console.log(Debug_1.Debug.toString(this.allSlots[columnIndex][column_x_row_coinPosition[1]]));
 	            }
 	            else
 	                break;
 	        }
-	        console.log('left: ' + left);
+	        console.log('left: ' + adjacentCoins_left);
 	        console.log('> top_left');
-	        var top_left = 0;
+	        var adjacentCoins_top_left = [];
 	        for (var columnIndex = column_x_row_coinPosition[0] - 1, rowIndex = column_x_row_coinPosition[1] + 1; columnIndex > column_x_row_coinPosition[0] - 4
 	            && columnIndex >= 0
 	            && rowIndex < column_x_row_coinPosition[1] + 4
 	            && rowIndex < this.row_x_column[0]; columnIndex--, rowIndex++) {
 	            if (this.allSlots[columnIndex][rowIndex] === activeCoinType) {
-	                top_left = top_left + 1;
+	                adjacentCoins_top_left.push([columnIndex, rowIndex]);
 	                console.log(Debug_1.Debug.toString(this.allSlots[columnIndex][rowIndex]));
 	            }
 	            else
 	                break;
 	        }
-	        console.log('top_left: ' + top_left);
-	        var isWin = bottom >= 3
-	            || top_right + bottom_left >= 3
-	            || right + left >= 3
-	            || bottom_right + top_left >= 3;
+	        console.log('top_left: ' + adjacentCoins_top_left);
+	        var isWin;
+	        var winnerCoins = [];
+	        if (adjacentCoins_bottom.length >= 3) {
+	            adjacentCoins_bottom.forEach(function (coinPosition) { return winnerCoins.push(coinPosition); });
+	            isWin = true;
+	        }
+	        if (adjacentCoins_top_right.length + adjacentCoins_bottom_left.length >= 3) {
+	            adjacentCoins_top_right.forEach(function (coinPosition) { return winnerCoins.push(coinPosition); });
+	            adjacentCoins_bottom_left.forEach(function (coinPosition) { return winnerCoins.push(coinPosition); });
+	            isWin = true;
+	        }
+	        if (adjacentCoins_right.length + adjacentCoins_left.length >= 3) {
+	            adjacentCoins_right.forEach(function (coinPosition) { return winnerCoins.push(coinPosition); });
+	            adjacentCoins_left.forEach(function (coinPosition) { return winnerCoins.push(coinPosition); });
+	            isWin = true;
+	        }
+	        if (adjacentCoins_bottom_right.length + adjacentCoins_top_left.length >= 3) {
+	            adjacentCoins_bottom_right.forEach(function (coinPosition) { return winnerCoins.push(coinPosition); });
+	            adjacentCoins_top_left.forEach(function (coinPosition) { return winnerCoins.push(coinPosition); });
+	            isWin = true;
+	        }
 	        if (isWin) {
+	            winnerCoins.push(column_x_row_coinPosition);
+	            this.winnerCoinPositions = winnerCoins;
 	            this.winner = this.coinToPlayerSlot(activeCoinType);
 	            console.log("WIN: " + Debug_1.Debug.toString_player(this.winner));
+	            console.log("this.winnerCoins: " + this.winnerCoinPositions);
 	        }
 	        console.log('------');
 	    };
