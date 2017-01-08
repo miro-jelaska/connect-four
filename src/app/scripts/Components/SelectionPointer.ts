@@ -7,12 +7,15 @@ import Texture = PIXI.Texture;
 import {Player} from "../Utilities/Player";
 import {GameBoard} from "./GameBoard";
 
-export class SelectionPointer implements RenderableElement{
+export class SelectionPointer implements RenderableElement {
     public static readonly POINTER_MARGIN_TOP = 20;
+
+    public readonly stripeIndex: number;
+
     private readonly sprite_blue: Sprite;
     private readonly sprite_red: Sprite;
     private readonly stage: Container;
-    private readonly stripeIndex: number;
+
     constructor(stripeIndex: number){
         this.stripeIndex = stripeIndex;
         this.sprite_blue = this.buildSprite(stripeIndex, Player.Blue);
@@ -20,7 +23,7 @@ export class SelectionPointer implements RenderableElement{
 
         let stage = new Container();
         stage.addChild(this.sprite_blue);
-        // stage.addChild(this.sprite_red);
+        stage.addChild(this.sprite_red);
         this.stage = stage;
     }
 
@@ -35,7 +38,20 @@ export class SelectionPointer implements RenderableElement{
         sprite.anchor.set(0.5, 0.5);
         sprite.position.x = GameBoard.getColumnCenter(stripeIndex);
         sprite.position.y = SelectionPointer.POINTER_MARGIN_TOP;
+        sprite.visible = false;
         return sprite;
+    }
+
+    public show(player: Player): void {
+        this.hide();
+        if(player == Player.Blue)
+            this.sprite_blue.visible = true;
+        else
+            this.sprite_red.visible = true;
+    }
+    public hide(): void {
+        this.sprite_blue.visible = false;
+        this.sprite_red.visible = false;
     }
 
     public getStage(): PIXI.Container {

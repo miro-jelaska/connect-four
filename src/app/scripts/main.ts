@@ -6,7 +6,7 @@ import {Game} from "./Game";
 import IRendererOptions = PIXI.IRendererOptions;
 
 
-function onLoad():void {
+function onLoad(): void {
     PIXI.loader
         .add([
             "./app/images/board.png",
@@ -17,22 +17,23 @@ function onLoad():void {
         ])
         .load(setup);
 
-    function setup():void {
+    function setup(): void {
         let rendererOptions:IRendererOptions = {
             antialias: true,
             transparent: true,
             resolution: 1
         };
         let renderer = PIXI.autoDetectRenderer(
-            Setting.CANVAS_WIDTH, Setting.CANVAS_HEIGHT,
+            Setting.CANVAS_WIDTH,
+            Setting.CANVAS_HEIGHT,
             rendererOptions);
+
         document.body.appendChild(renderer.view);
 
-        let game: Game = new Game(renderer);
-        gameLoop(game);
+        gameLoop(new Game(renderer));
     }
 
-    function gameLoop(game: Game):void {
+    function gameLoop(game: Game): void {
         requestAnimationFrame(() => gameLoop(game));
         game.update();
         game.render();

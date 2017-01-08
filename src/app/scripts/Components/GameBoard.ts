@@ -7,6 +7,7 @@ import Graphics = PIXI.Graphics;
 import {SelectionStripe} from "./SelectionStripe";
 import {RenderableElement} from "../Utilities/RenderableElement";
 import {SelectionPointer} from "./SelectionPointer";
+import {Player} from "../Utilities/Player";
 
 export class GameBoard implements RenderableElement{
     public static readonly ROWxCOLUMN:[number, number] = [6, 7];
@@ -17,17 +18,18 @@ export class GameBoard implements RenderableElement{
     public static readonly BOARD_HEIGHT = 500;
     public static readonly BOARD_MARGIN_TOP = 50;
 
-    private readonly selectionStripes: SelectionStripe[] = [];
-    private readonly selectionPointers: SelectionPointer[] = [];
+     readonly selectionStripes: SelectionStripe[] = [];
+     readonly selectionPointers: Array<SelectionPointer> = [];
 
     constructor(){
         for(var columnIndex = 0; columnIndex < GameBoard.ROWxCOLUMN[1]; columnIndex++){
             let selectionStripe = new SelectionStripe(columnIndex);
-            selectionStripe.subscribeTo_onMouseOver(this.onSelectionStripeMouseOver);
-            selectionStripe.subscribeTo_onMouseOut(this.onSelectionStripeMouseOut);
+            selectionStripe.subscribeTo_onMouseOver((stripeIndex:number) => this.onSelectionStripeMouseOver(stripeIndex));
+            selectionStripe.subscribeTo_onMouseOut((stripeIndex:number) => this.onSelectionStripeMouseOut(stripeIndex));
             this.selectionStripes.push(selectionStripe);
 
             this.selectionPointers.push(new SelectionPointer(columnIndex));
+            console.log(this.selectionPointers);
         }
     }
 
@@ -47,12 +49,18 @@ export class GameBoard implements RenderableElement{
         return sprite;
     }
 
-    private onSelectionStripeMouseOver(stripeIndex: number){
+    private onSelectionStripeMouseOver(stripeIndex: number): void{
         console.log('MouseOver, I got it! index >> ' + stripeIndex);
+        this.selectionPointers
+            .find((pointer: SelectionPointer) => pointer.stripeIndex == stripeIndex)
+            .show(Player.Red);
     }
 
-    private onSelectionStripeMouseOut(stripeIndex: number){
+    private onSelectionStripeMouseOut(stripeIndex: number): void{
         console.log('MouseOut, I got it! index >> ' + stripeIndex);
+        this.selectionPointers
+            .find((pointer: SelectionPointer) => pointer.stripeIndex == stripeIndex)
+            .hide();
     }
 
 

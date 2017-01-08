@@ -4,8 +4,9 @@
         "target": "es5",
         "noImplicitAny": true,
         "sourceMap": false,
+        "removeComments": true,
         "typeRoots": [
-          "./node_modules/@types/"
+          "./node_modules/@types"
         ]
     },
     "files": [

@@ -46,8 +46,8 @@
 
 	"use strict";
 	__webpack_require__(1);
-	var Settings_1 = __webpack_require__(181);
-	var Game_1 = __webpack_require__(183);
+	var Settings_1 = __webpack_require__(179);
+	var Game_1 = __webpack_require__(180);
 	function onLoad() {
 	    PIXI.loader
 	        .add([
@@ -66,8 +66,7 @@
 	        };
 	        var renderer = PIXI.autoDetectRenderer(Settings_1.Setting.CANVAS_WIDTH, Settings_1.Setting.CANVAS_HEIGHT, rendererOptions);
 	        document.body.appendChild(renderer.view);
-	        var game = new Game_1.Game(renderer);
-	        gameLoop(game);
+	        gameLoop(new Game_1.Game(renderer));
 	    }
 	    function gameLoop(game) {
 	        requestAnimationFrame(function () { return gameLoop(game); });
@@ -37782,22 +37781,70 @@
 
 /***/ },
 /* 179 */
+/***/ function(module, exports) {
+
+	"use strict";
+	var Setting = (function () {
+	    function Setting() {
+	    }
+	    return Setting;
+	}());
+	Setting.CANVAS_WIDTH = 580;
+	Setting.CANVAS_HEIGHT = 700;
+	exports.Setting = Setting;
+
+
+/***/ },
+/* 180 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var GameBoard_1 = __webpack_require__(181);
+	var ScoreBoard_1 = __webpack_require__(185);
+	var Game = (function () {
+	    function Game(rendered) {
+	        this.renderer = rendered;
+	        this.gameBoard = new GameBoard_1.GameBoard();
+	        this.scoreBoard = new ScoreBoard_1.ScoreBoard();
+	    }
+	    Game.prototype.update = function () {
+	    };
+	    Game.prototype.render = function () {
+	        var rootStage = new PIXI.Container();
+	        [
+	            this.gameBoard,
+	            this.scoreBoard,
+	        ]
+	            .map(function (element) { return element.getStage(); })
+	            .forEach(function (stage) { return rootStage.addChild(stage); });
+	        this.renderer.render(rootStage);
+	    };
+	    return Game;
+	}());
+	exports.Game = Game;
+
+
+/***/ },
+/* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	__webpack_require__(1);
-	var SelectionStripe_1 = __webpack_require__(184);
-	var SelectionPointer_1 = __webpack_require__(185);
+	var SelectionStripe_1 = __webpack_require__(182);
+	var SelectionPointer_1 = __webpack_require__(183);
+	var Player_1 = __webpack_require__(184);
 	var GameBoard = (function () {
 	    function GameBoard() {
+	        var _this = this;
 	        this.selectionStripes = [];
 	        this.selectionPointers = [];
 	        for (var columnIndex = 0; columnIndex < GameBoard.ROWxCOLUMN[1]; columnIndex++) {
 	            var selectionStripe = new SelectionStripe_1.SelectionStripe(columnIndex);
-	            selectionStripe.subscribeTo_onMouseOver(this.onSelectionStripeMouseOver);
-	            selectionStripe.subscribeTo_onMouseOut(this.onSelectionStripeMouseOut);
+	            selectionStripe.subscribeTo_onMouseOver(function (stripeIndex) { return _this.onSelectionStripeMouseOver(stripeIndex); });
+	            selectionStripe.subscribeTo_onMouseOut(function (stripeIndex) { return _this.onSelectionStripeMouseOut(stripeIndex); });
 	            this.selectionStripes.push(selectionStripe);
 	            this.selectionPointers.push(new SelectionPointer_1.SelectionPointer(columnIndex));
+	            console.log(this.selectionPointers);
 	        }
 	    }
 	    Object.defineProperty(GameBoard.prototype, "boardSprite", {
@@ -37817,9 +37864,15 @@
 	    });
 	    GameBoard.prototype.onSelectionStripeMouseOver = function (stripeIndex) {
 	        console.log('MouseOver, I got it! index >> ' + stripeIndex);
+	        this.selectionPointers
+	            .find(function (pointer) { return pointer.stripeIndex == stripeIndex; })
+	            .show(Player_1.Player.Red);
 	    };
 	    GameBoard.prototype.onSelectionStripeMouseOut = function (stripeIndex) {
 	        console.log('MouseOut, I got it! index >> ' + stripeIndex);
+	        this.selectionPointers
+	            .find(function (pointer) { return pointer.stripeIndex == stripeIndex; })
+	            .hide();
 	    };
 	    GameBoard.prototype.getStage = function () {
 	        var stage = new PIXI.Container();
@@ -37857,91 +37910,13 @@
 
 
 /***/ },
-/* 180 */,
-/* 181 */
-/***/ function(module, exports) {
-
-	"use strict";
-	var Setting = (function () {
-	    function Setting() {
-	    }
-	    return Setting;
-	}());
-	Setting.CANVAS_WIDTH = 580;
-	Setting.CANVAS_HEIGHT = 700;
-	exports.Setting = Setting;
-
-
-/***/ },
 /* 182 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	__webpack_require__(1);
-	var ScoreBoard = (function () {
-	    function ScoreBoard() {
-	    }
-	    ScoreBoard.prototype.getStage = function () {
-	        var stage = new PIXI.Container();
-	        var graphics = new PIXI.Graphics();
-	        graphics.beginFill(0xBEDB39, 0.01);
-	        graphics.drawRect(0, 0, 50, 50);
-	        graphics.endFill();
-	        graphics.interactive = true;
-	        graphics.on("mouseover", function () {
-	            console.log('success');
-	            graphics.scale.set(2, 2);
-	        });
-	        graphics.on("mouseout", function () {
-	            console.log('out');
-	            graphics.scale.set(1, 1);
-	        });
-	        stage.addChild(graphics);
-	        return stage;
-	    };
-	    return ScoreBoard;
-	}());
-	exports.ScoreBoard = ScoreBoard;
-
-
-/***/ },
-/* 183 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var GameBoard_1 = __webpack_require__(179);
-	var ScoreBoard_1 = __webpack_require__(182);
-	var Game = (function () {
-	    function Game(rendered) {
-	        this.renderer = rendered;
-	        this.gameBoard = new GameBoard_1.GameBoard();
-	        this.scoreBoard = new ScoreBoard_1.ScoreBoard();
-	    }
-	    Game.prototype.update = function () {
-	    };
-	    Game.prototype.render = function () {
-	        var rootStage = new PIXI.Container();
-	        [
-	            this.gameBoard,
-	            this.scoreBoard,
-	        ]
-	            .map(function (element) { return element.getStage(); })
-	            .forEach(function (stage) { return rootStage.addChild(stage); });
-	        this.renderer.render(rootStage);
-	    };
-	    return Game;
-	}());
-	exports.Game = Game;
-
-
-/***/ },
-/* 184 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var Graphics = PIXI.Graphics;
 	var Container = PIXI.Container;
-	var GameBoard_1 = __webpack_require__(179);
+	var GameBoard_1 = __webpack_require__(181);
 	var VisibilityLevel;
 	(function (VisibilityLevel) {
 	    VisibilityLevel[VisibilityLevel["Low"] = 0.01] = "Low";
@@ -38023,13 +37998,13 @@
 
 
 /***/ },
-/* 185 */
+/* 183 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var Container = PIXI.Container;
-	var Player_1 = __webpack_require__(186);
-	var GameBoard_1 = __webpack_require__(179);
+	var Player_1 = __webpack_require__(184);
+	var GameBoard_1 = __webpack_require__(181);
 	var SelectionPointer = (function () {
 	    function SelectionPointer(stripeIndex) {
 	        this.stripeIndex = stripeIndex;
@@ -38037,7 +38012,7 @@
 	        this.sprite_red = this.buildSprite(stripeIndex, Player_1.Player.Red);
 	        var stage = new Container();
 	        stage.addChild(this.sprite_blue);
-	        // stage.addChild(this.sprite_red);
+	        stage.addChild(this.sprite_red);
 	        this.stage = stage;
 	    }
 	    SelectionPointer.prototype.buildSprite = function (stripeIndex, pointerType) {
@@ -38050,7 +38025,19 @@
 	        sprite.anchor.set(0.5, 0.5);
 	        sprite.position.x = GameBoard_1.GameBoard.getColumnCenter(stripeIndex);
 	        sprite.position.y = SelectionPointer.POINTER_MARGIN_TOP;
+	        sprite.visible = false;
 	        return sprite;
+	    };
+	    SelectionPointer.prototype.show = function (player) {
+	        this.hide();
+	        if (player == Player_1.Player.Blue)
+	            this.sprite_blue.visible = true;
+	        else
+	            this.sprite_red.visible = true;
+	    };
+	    SelectionPointer.prototype.hide = function () {
+	        this.sprite_blue.visible = false;
+	        this.sprite_red.visible = false;
 	    };
 	    SelectionPointer.prototype.getStage = function () {
 	        return this.stage;
@@ -38062,7 +38049,7 @@
 
 
 /***/ },
-/* 186 */
+/* 184 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -38071,6 +38058,38 @@
 	    Player[Player["Blue"] = 0] = "Blue";
 	    Player[Player["Red"] = 1] = "Red";
 	})(Player = exports.Player || (exports.Player = {}));
+
+
+/***/ },
+/* 185 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	__webpack_require__(1);
+	var ScoreBoard = (function () {
+	    function ScoreBoard() {
+	    }
+	    ScoreBoard.prototype.getStage = function () {
+	        var stage = new PIXI.Container();
+	        var graphics = new PIXI.Graphics();
+	        graphics.beginFill(0xBEDB39, 0.01);
+	        graphics.drawRect(0, 0, 50, 50);
+	        graphics.endFill();
+	        graphics.interactive = true;
+	        graphics.on("mouseover", function () {
+	            console.log('success');
+	            graphics.scale.set(2, 2);
+	        });
+	        graphics.on("mouseout", function () {
+	            console.log('out');
+	            graphics.scale.set(1, 1);
+	        });
+	        stage.addChild(graphics);
+	        return stage;
+	    };
+	    return ScoreBoard;
+	}());
+	exports.ScoreBoard = ScoreBoard;
 
 
 /***/ }
