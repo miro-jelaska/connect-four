@@ -3,13 +3,26 @@ import Graphics = PIXI.Graphics;
 import Rectangle = PIXI.Rectangle;
 import Sprite = PIXI.Sprite;
 import Container = PIXI.Container;
+
+enum VisibilityLevel{
+    Low = 0.01,
+    High = 0.2
+}
+
 export class SelectionStripe implements RenderableElement{
     stripeGraphics: Graphics;
+    stripeRectangleParameters: number[];
 
     constructor(x: number, y: number, width: number, height: number){
+        this.stripeRectangleParameters = [x, y, width, height];
+        this.setStripe(VisibilityLevel.Low);
+    }
+
+    private setStripe(visibilityLevel: VisibilityLevel): void{
         let stripe = new Graphics();
-        stripe.beginFill(0x000000, 0.5);
-        stripe.drawRect(x, y, width, height);
+        stripe.beginFill(0x000000);
+        stripe.alpha = visibilityLevel;
+        stripe.drawRect.apply(stripe, this.stripeRectangleParameters);
         stripe.endFill();
         stripe.interactive = true;
 
@@ -21,11 +34,13 @@ export class SelectionStripe implements RenderableElement{
     }
 
     private onMouseOver(): void{
-        console.log('over');
+        if(this.stripeGraphics.alpha != VisibilityLevel.High)
+            this.setStripe(VisibilityLevel.High);
     }
 
     private onMouseOut(): void{
-        console.log('out');
+        if(this.stripeGraphics.alpha != VisibilityLevel.Low)
+            this.setStripe(VisibilityLevel.Low);
     }
 
     private onMouseClick(): void{

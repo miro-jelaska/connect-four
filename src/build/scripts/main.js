@@ -37784,7 +37784,14 @@
 	var SelectionStripe_1 = __webpack_require__(184);
 	var GameBoard = (function () {
 	    function GameBoard() {
-	        this.selectionStripe = new SelectionStripe_1.SelectionStripe(0, GameBoard.BOARD_MARGIN_TOP, 90, GameBoard.BOARD_HEIGHT);
+	        this.selectionStripes = [];
+	        var widthOfStripe = GameBoard.COIN_DIAMETER + GameBoard.COIN_MARGIN;
+	        for (var column = 0; column < GameBoard.ROWxCOLUMN[0]; column++) {
+	            var boardPadding = column == 0 ? 0 : GameBoard.BOARD_PADDING - GameBoard.COIN_MARGIN / 2;
+	            var isFirstOrLast = column == 0 || column == (GameBoard.ROWxCOLUMN[0] - 1);
+	            var selectionStripe = new SelectionStripe_1.SelectionStripe(boardPadding + column * widthOfStripe, GameBoard.BOARD_MARGIN_TOP, widthOfStripe + (isFirstOrLast ? GameBoard.COIN_MARGIN / 2 : 0), GameBoard.BOARD_HEIGHT);
+	            this.selectionStripes.push(selectionStripe);
+	        }
 	    }
 	    Object.defineProperty(GameBoard.prototype, "boardSprite", {
 	        get: function () {
@@ -37804,7 +37811,7 @@
 	    GameBoard.prototype.getStage = function () {
 	        var stage = new PIXI.Container();
 	        stage.addChild(this.boardSprite);
-	        stage.addChild(this.selectionStripe.getStage());
+	        this.selectionStripes.forEach(function (stripe) { return stage.addChild(stripe.getStage()); });
 	        return stage;
 	    };
 	    GameBoard.getCenter = function (row, column) {
@@ -37815,12 +37822,12 @@
 	        var y = GameBoard.BOARD_MARGIN_TOP
 	            + GameBoard.BOARD_PADDING
 	            + GameBoard.COIN_DIAMETER / 2
-	            + (GameBoard.ROWxCOLUMN[1] - column) * (GameBoard.COIN_DIAMETER + GameBoard.COIN_MARGIN);
+	            + (GameBoard.ROWxCOLUMN[0] - column) * (GameBoard.COIN_DIAMETER + GameBoard.COIN_MARGIN);
 	        return new PIXI.Point(x, y);
 	    };
 	    return GameBoard;
 	}());
-	GameBoard.ROWxCOLUMN = [6, 7];
+	GameBoard.ROWxCOLUMN = [7, 6];
 	GameBoard.COIN_MARGIN = 20;
 	GameBoard.COIN_DIAMETER = 60;
 	GameBoard.BOARD_PADDING = 20;
@@ -37915,24 +37922,36 @@
 	"use strict";
 	var Graphics = PIXI.Graphics;
 	var Container = PIXI.Container;
+	var VisibilityLevel;
+	(function (VisibilityLevel) {
+	    VisibilityLevel[VisibilityLevel["Low"] = 0.01] = "Low";
+	    VisibilityLevel[VisibilityLevel["High"] = 0.2] = "High";
+	})(VisibilityLevel || (VisibilityLevel = {}));
 	var SelectionStripe = (function () {
 	    function SelectionStripe(x, y, width, height) {
+	        this.stripeRectangleParameters = [x, y, width, height];
+	        this.setStripe(VisibilityLevel.Low);
+	    }
+	    SelectionStripe.prototype.setStripe = function (visibilityLevel) {
 	        var _this = this;
 	        var stripe = new Graphics();
-	        stripe.beginFill(0x000000, 0.5);
-	        stripe.drawRect(x, y, width, height);
+	        stripe.beginFill(0x000000);
+	        stripe.alpha = visibilityLevel;
+	        stripe.drawRect.apply(stripe, this.stripeRectangleParameters);
 	        stripe.endFill();
 	        stripe.interactive = true;
 	        stripe.on('mouseover', function () { return _this.onMouseOver(); });
 	        stripe.on('mouseout', function () { return _this.onMouseOut(); });
 	        stripe.on('click', function () { return _this.onMouseClick(); });
 	        this.stripeGraphics = stripe;
-	    }
+	    };
 	    SelectionStripe.prototype.onMouseOver = function () {
-	        console.log('over');
+	        if (this.stripeGraphics.alpha != VisibilityLevel.High)
+	            this.setStripe(VisibilityLevel.High);
 	    };
 	    SelectionStripe.prototype.onMouseOut = function () {
-	        console.log('out');
+	        if (this.stripeGraphics.alpha != VisibilityLevel.Low)
+	            this.setStripe(VisibilityLevel.Low);
 	    };
 	    SelectionStripe.prototype.onMouseClick = function () {
 	        console.log('click');

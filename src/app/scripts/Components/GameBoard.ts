@@ -1,14 +1,14 @@
 import 'pixi.js';
-import {RenderableElement} from "../Utilities/RenderableElement";
+
 import Texture = PIXI.Texture;
 import DisplayObject = PIXI.DisplayObject;
 import Container = PIXI.Container;
 import Graphics = PIXI.Graphics;
 import {SelectionStripe} from "./SelectionStripe";
-
+import {RenderableElement} from "../Utilities/RenderableElement";
 
 export class GameBoard implements RenderableElement{
-    public static readonly ROWxCOLUMN:[number, number] = [6, 7];
+    public static readonly ROWxCOLUMN:[number, number] = [7, 6];
     public static readonly COIN_MARGIN = 20;
     public static readonly COIN_DIAMETER = 60;
     public static readonly BOARD_PADDING = 20;
@@ -16,16 +16,22 @@ export class GameBoard implements RenderableElement{
     public static readonly BOARD_HEIGHT = 500;
     public static readonly BOARD_MARGIN_TOP = 50;
 
-    private readonly selectionStripe: SelectionStripe;
-
+    private readonly selectionStripes: SelectionStripe[] = [];
 
     constructor(){
-        this.selectionStripe = new SelectionStripe(
-            0, GameBoard.BOARD_MARGIN_TOP,
-            90, GameBoard.BOARD_HEIGHT
-        );
+        let widthOfStripe = GameBoard.COIN_DIAMETER + GameBoard.COIN_MARGIN;
+        for(var column = 0; column < GameBoard.ROWxCOLUMN[0]; column++){
+            let boardPadding = column == 0 ? 0: GameBoard.BOARD_PADDING - GameBoard.COIN_MARGIN/2;
+            let isFirstOrLast = column == 0 || column == (GameBoard.ROWxCOLUMN[0] - 1);
+            let selectionStripe = new SelectionStripe(
+                boardPadding + column*widthOfStripe, GameBoard.BOARD_MARGIN_TOP,
+                widthOfStripe + (isFirstOrLast ? GameBoard.COIN_MARGIN/2 : 0), GameBoard.BOARD_HEIGHT
+            );
+            this.selectionStripes.push(selectionStripe);
+        }
     }
 
+    // Board sprite doesn't change thus Lazy pattern.
     private _boardSprite:PIXI.Sprite;
     private get boardSprite(): PIXI.Sprite {
         if(this._boardSprite)
@@ -45,7 +51,7 @@ export class GameBoard implements RenderableElement{
     public getStage():PIXI.Container{
         let stage = new PIXI.Container();
         stage.addChild(this.boardSprite);
-        stage.addChild(this.selectionStripe.getStage());
+        this.selectionStripes.forEach(stripe => stage.addChild(stripe.getStage()));
         return stage;
     }
 
@@ -59,7 +65,7 @@ export class GameBoard implements RenderableElement{
             GameBoard.BOARD_MARGIN_TOP
             + GameBoard.BOARD_PADDING
             + GameBoard.COIN_DIAMETER/2
-            + (GameBoard.ROWxCOLUMN[1] - column)*(GameBoard.COIN_DIAMETER + GameBoard.COIN_MARGIN);
+            + (GameBoard.ROWxCOLUMN[0] - column)*(GameBoard.COIN_DIAMETER + GameBoard.COIN_MARGIN);
 
         return new PIXI.Point(x, y);
     }
