@@ -63,7 +63,7 @@ export class SelectionStripe implements RenderableElement{
         this.mouseClickEventListeners.push(eventListener);
     }
     private onMouseClick(): void{
-        console.log('click');
+        this.mouseClickEventListeners.forEach(listener => listener(this.index));
     }
 
     public getStage(): PIXI.Container {

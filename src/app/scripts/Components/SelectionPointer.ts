@@ -26,7 +26,6 @@ export class SelectionPointer implements RenderableElement {
         stage.addChild(this.sprite_red);
         this.stage = stage;
     }
-
     private buildSprite(stripeIndex: number, pointerType: Player):PIXI.Sprite {
         let texture =
             pointerType == Player.Blue

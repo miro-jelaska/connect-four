@@ -37801,10 +37801,13 @@
 	"use strict";
 	var GameBoard_1 = __webpack_require__(181);
 	var ScoreBoard_1 = __webpack_require__(185);
+	var Player_1 = __webpack_require__(184);
 	var Game = (function () {
 	    function Game(rendered) {
+	        this.playerWhoIsActiveFirst = Player_1.Player.Blue;
+	        this.activePlayer = this.playerWhoIsActiveFirst;
 	        this.renderer = rendered;
-	        this.gameBoard = new GameBoard_1.GameBoard();
+	        this.gameBoard = new GameBoard_1.GameBoard(this.activePlayer);
 	        this.scoreBoard = new ScoreBoard_1.ScoreBoard();
 	    }
 	    Game.prototype.update = function () {
@@ -37834,45 +37837,45 @@
 	var SelectionPointer_1 = __webpack_require__(183);
 	var Player_1 = __webpack_require__(184);
 	var GameBoard = (function () {
-	    function GameBoard() {
+	    function GameBoard(activePlayer) {
 	        var _this = this;
 	        this.selectionStripes = [];
 	        this.selectionPointers = [];
+	        this.activePlayer = activePlayer;
 	        for (var columnIndex = 0; columnIndex < GameBoard.ROWxCOLUMN[1]; columnIndex++) {
 	            var selectionStripe = new SelectionStripe_1.SelectionStripe(columnIndex);
 	            selectionStripe.subscribeTo_onMouseOver(function (stripeIndex) { return _this.onSelectionStripeMouseOver(stripeIndex); });
 	            selectionStripe.subscribeTo_onMouseOut(function (stripeIndex) { return _this.onSelectionStripeMouseOut(stripeIndex); });
+	            selectionStripe.subscribeTo_onMouseClick(function (stripeIndex) { return _this.onSelectionStripeMouseClick(stripeIndex); });
 	            this.selectionStripes.push(selectionStripe);
 	            this.selectionPointers.push(new SelectionPointer_1.SelectionPointer(columnIndex));
 	            console.log(this.selectionPointers);
 	        }
+	        this.boardSprite = this.buildBoardSprite();
 	    }
-	    Object.defineProperty(GameBoard.prototype, "boardSprite", {
-	        get: function () {
-	            if (this._boardSprite)
-	                return this._boardSprite;
-	            var texture = PIXI.loader.resources["./app/images/board.png"].texture;
-	            var sprite = new PIXI.Sprite(texture);
-	            sprite.width = GameBoard.BOARD_WIDTH;
-	            sprite.height = GameBoard.BOARD_HEIGHT;
-	            sprite.position.y = GameBoard.BOARD_MARGIN_TOP;
-	            this._boardSprite = sprite;
-	            return sprite;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
+	    GameBoard.prototype.buildBoardSprite = function () {
+	        var texture = PIXI.loader.resources["./app/images/board.png"].texture;
+	        var sprite = new PIXI.Sprite(texture);
+	        sprite.width = GameBoard.BOARD_WIDTH;
+	        sprite.height = GameBoard.BOARD_HEIGHT;
+	        sprite.position.y = GameBoard.BOARD_MARGIN_TOP;
+	        return sprite;
+	    };
+	    GameBoard.prototype.setActivePlayer = function (player) {
+	        this.activePlayer = player;
+	    };
 	    GameBoard.prototype.onSelectionStripeMouseOver = function (stripeIndex) {
-	        console.log('MouseOver, I got it! index >> ' + stripeIndex);
 	        this.selectionPointers
 	            .find(function (pointer) { return pointer.stripeIndex == stripeIndex; })
-	            .show(Player_1.Player.Red);
+	            .show(this.activePlayer);
 	    };
 	    GameBoard.prototype.onSelectionStripeMouseOut = function (stripeIndex) {
-	        console.log('MouseOut, I got it! index >> ' + stripeIndex);
 	        this.selectionPointers
 	            .find(function (pointer) { return pointer.stripeIndex == stripeIndex; })
 	            .hide();
+	    };
+	    GameBoard.prototype.onSelectionStripeMouseClick = function (stripeIndex) {
+	        this.setActivePlayer(this.activePlayer == Player_1.Player.Blue ? Player_1.Player.Red : Player_1.Player.Blue);
 	    };
 	    GameBoard.prototype.getStage = function () {
 	        var stage = new PIXI.Container();
@@ -37968,7 +37971,8 @@
 	        this.mouseClickEventListeners.push(eventListener);
 	    };
 	    SelectionStripe.prototype.onMouseClick = function () {
-	        console.log('click');
+	        var _this = this;
+	        this.mouseClickEventListeners.forEach(function (listener) { return listener(_this.index); });
 	    };
 	    SelectionStripe.prototype.getStage = function () {
 	        var stage = new Container();
