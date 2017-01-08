@@ -3,6 +3,7 @@ import {Player} from "../Utilities/Player";
 import {UpdateableElement} from "../Utilities/UpdateableElement";
 import Sprite = PIXI.Sprite;
 import Container = PIXI.Container;
+import {Debug} from "../Debug/Debug";
 
 export class Coin implements RenderableElement, UpdateableElement{
     public static readonly DROP_VELOCITY = 4.5;
@@ -20,7 +21,7 @@ export class Coin implements RenderableElement, UpdateableElement{
         this.player = player;
         this.finalPosition = finalPosition;
         let texture =
-            player == Player.Blue
+            player === Player.Blue
             ? PIXI.loader.resources["./app/images/coin-blue.png"].texture
             : PIXI.loader.resources["./app/images/coin-red.png"].texture;
         let sprite = new PIXI.Sprite(texture);

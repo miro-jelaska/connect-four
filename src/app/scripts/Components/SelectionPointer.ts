@@ -30,7 +30,7 @@ export class SelectionPointer implements RenderableElement {
     }
     private buildSprite(stripeIndex: number, pointerType: Player):PIXI.Sprite {
         let texture =
-            pointerType == Player.Blue
+            pointerType === Player.Blue
             ? PIXI.loader.resources["./app/images/pointer-blue.png"].texture
             : PIXI.loader.resources["./app/images/pointer-red.png"].texture;
         let sprite = new PIXI.Sprite(texture);
@@ -48,7 +48,7 @@ export class SelectionPointer implements RenderableElement {
         if(!this.isEmptySlotAvailable())
             return;
 
-        if(player == Player.Blue)
+        if(player === Player.Blue)
             this.sprite_blue.visible = true;
         else
             this.sprite_red.visible = true;

@@ -1,7 +1,8 @@
 import {GameBoard} from "../Components/GameBoard";
 import {Player} from "./Player";
+import {Debug} from "../Debug/Debug";
 
-enum CoinSlot {
+export enum CoinSlot {
     Empty,
     Blue,
     Red
@@ -41,7 +42,7 @@ export class CoinsTracker {
 
         for(var rowIndex = 0; rowIndex < this.row_x_column[0]; rowIndex++){
             if(this.allSlots[columnIndex][rowIndex] == CoinSlot.Empty){
-                let coinPosition: [number, number] = [rowIndex, columnIndex];
+                let coinPosition: [number, number] = [columnIndex, rowIndex];
                 this.allSlots[columnIndex][rowIndex] = this.playerToCoinSlot(player);
                 this.checkIsWinningMove(coinPosition);
                 return coinPosition;
@@ -62,8 +63,8 @@ export class CoinsTracker {
             this.allSlots
                 .some((column: CoinSlot[]) =>
                     column.some((slot: CoinSlot) =>
-                        slot == CoinSlot.Empty))
-        return !thereIsAtLeastOneEmptySlot;;
+                        slot == CoinSlot.Empty));
+        return !thereIsAtLeastOneEmptySlot;
     }
 
     public isGameOver(): boolean {
@@ -76,7 +77,58 @@ export class CoinsTracker {
         return CoinSlot.Red;
     }
 
-    private checkIsWinningMove(coinPosition: [number, number]): void {
-        console.log(this.allSlots[coinPosition[1]][coinPosition[0]]);
+    private checkIsWinningMove(column_x_row_coinPosition: [number, number]): void {
+        let activeCoinType: CoinSlot = this.allSlots[column_x_row_coinPosition[0]][column_x_row_coinPosition[1]];
+        console.log('ActiveCoin: ' + Debug.toString(activeCoinType));
+
+        // top_right ↗︎
+        console.log('> top_right');
+        let top_right = 0;
+        for(var columnIndex = column_x_row_coinPosition[0] + 1, rowIndex = column_x_row_coinPosition[1] + 1;
+            columnIndex < column_x_row_coinPosition[0] + 4
+            && columnIndex < this.row_x_column[1]
+            && rowIndex < column_x_row_coinPosition[1] + 4
+            && rowIndex < this.row_x_column[0];
+            columnIndex++, rowIndex++){
+            if(this.allSlots[columnIndex][rowIndex] === activeCoinType){
+                top_right = top_right + 1;
+                console.log(Debug.toString(this.allSlots[columnIndex][rowIndex]));
+            }
+            else break;
+        }
+        console.log('top_right: ' + top_right);
+
+        // right →
+        console.log('> right');
+        let right = 0;
+        for(var columnIndex = column_x_row_coinPosition[0] + 1;
+            columnIndex < column_x_row_coinPosition[0] + 4
+            && columnIndex < this.row_x_column[1];
+            columnIndex++){
+            if(this.allSlots[columnIndex][column_x_row_coinPosition[1]] === activeCoinType){
+                right = right + 1;
+                console.log(Debug.toString(this.allSlots[columnIndex][column_x_row_coinPosition[1]]));
+            }
+            else break;
+        }
+        console.log('right: ' + right);
+
+        // down ↓
+        console.log('> down');
+        let down = 0;
+        for(var rowIndex = column_x_row_coinPosition[1] - 1; rowIndex > column_x_row_coinPosition[1] - 4 && rowIndex >= 0; rowIndex--){
+            if(this.allSlots[column_x_row_coinPosition[0]][rowIndex] === activeCoinType){
+                down = down + 1;
+                console.log(Debug.toString(this.allSlots[column_x_row_coinPosition[0]][rowIndex]));
+            }
+            else break;
+        }
+        console.log('down: ' + down);
+
+
+
+
+
+        console.log('------');
     }
 }

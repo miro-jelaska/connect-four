@@ -11,6 +11,7 @@ import {Player} from "../Utilities/Player";
 import {Coin} from "./Coin";
 import {UpdateableElement} from "../Utilities/UpdateableElement";
 import {CoinsTracker} from "../Utilities/CoinsTracker";
+import {Debug} from "../Debug/Debug";
 
 export class GameBoard implements RenderableElement, UpdateableElement{
     public static readonly ROWxCOLUMN:[number, number] = [6, 7];
@@ -62,27 +63,27 @@ export class GameBoard implements RenderableElement, UpdateableElement{
 
     private onSelectionStripeMouseOver(stripeIndex: number): void {
         this.selectionPointers
-            .find((pointer: SelectionPointer) => pointer.stripeIndex == stripeIndex)
+            .find((pointer: SelectionPointer) => pointer.stripeIndex === stripeIndex)
             .show(this.activePlayer);
     }
 
     private onSelectionStripeMouseOut(stripeIndex: number): void {
         this.selectionPointers
-            .find((pointer: SelectionPointer) => pointer.stripeIndex == stripeIndex)
+            .find((pointer: SelectionPointer) => pointer.stripeIndex === stripeIndex)
             .hide();
     }
 
     private onSelectionStripeMouseClick(stripeIndex: number): void {
         if(this.coinsTracker.isEmptySlotAvailable(stripeIndex) && !this.coinsTracker.isGameOver()) {
-            this.switchActivePlayer();
             this.dropCoin(stripeIndex);
+            this.switchActivePlayer();
         }
     }
 
 
     private switchActivePlayer(): void {
         this.activePlayer =
-            this.activePlayer == Player.Blue
+            this.activePlayer === Player.Blue
             ? Player.Red
             : Player.Blue;
     }
@@ -103,7 +104,7 @@ export class GameBoard implements RenderableElement, UpdateableElement{
     }
 
 
-    public static getCenter(row: number, column: number): PIXI.Point{
+    public static getCenter(column: number, row: number): PIXI.Point{
         let x = this.getColumnCenter(column);
         let y = this.getRowCenter(row);
         return new PIXI.Point(x, y);

@@ -37800,7 +37800,7 @@
 
 	"use strict";
 	var GameBoard_1 = __webpack_require__(181);
-	var ScoreBoard_1 = __webpack_require__(185);
+	var ScoreBoard_1 = __webpack_require__(187);
 	var Player_1 = __webpack_require__(184);
 	var Game = (function () {
 	    function Game(rendered) {
@@ -37835,10 +37835,10 @@
 	"use strict";
 	__webpack_require__(1);
 	var SelectionStripe_1 = __webpack_require__(182);
-	var SelectionPointer_1 = __webpack_require__(183);
+	var SelectionPointer_1 = __webpack_require__(185);
 	var Player_1 = __webpack_require__(184);
-	var Coin_1 = __webpack_require__(186);
-	var CoinsTracker_1 = __webpack_require__(187);
+	var Coin_1 = __webpack_require__(183);
+	var CoinsTracker_1 = __webpack_require__(186);
 	var GameBoard = (function () {
 	    function GameBoard(activePlayer) {
 	        var _this = this;
@@ -37877,23 +37877,23 @@
 	    };
 	    GameBoard.prototype.onSelectionStripeMouseOver = function (stripeIndex) {
 	        this.selectionPointers
-	            .find(function (pointer) { return pointer.stripeIndex == stripeIndex; })
+	            .find(function (pointer) { return pointer.stripeIndex === stripeIndex; })
 	            .show(this.activePlayer);
 	    };
 	    GameBoard.prototype.onSelectionStripeMouseOut = function (stripeIndex) {
 	        this.selectionPointers
-	            .find(function (pointer) { return pointer.stripeIndex == stripeIndex; })
+	            .find(function (pointer) { return pointer.stripeIndex === stripeIndex; })
 	            .hide();
 	    };
 	    GameBoard.prototype.onSelectionStripeMouseClick = function (stripeIndex) {
 	        if (this.coinsTracker.isEmptySlotAvailable(stripeIndex) && !this.coinsTracker.isGameOver()) {
-	            this.switchActivePlayer();
 	            this.dropCoin(stripeIndex);
+	            this.switchActivePlayer();
 	        }
 	    };
 	    GameBoard.prototype.switchActivePlayer = function () {
 	        this.activePlayer =
-	            this.activePlayer == Player_1.Player.Blue
+	            this.activePlayer === Player_1.Player.Blue
 	                ? Player_1.Player.Red
 	                : Player_1.Player.Blue;
 	    };
@@ -37908,7 +37908,7 @@
 	        this.selectionPointers.forEach(function (pointer) { return stage.addChild(pointer.getStage()); });
 	        return stage;
 	    };
-	    GameBoard.getCenter = function (row, column) {
+	    GameBoard.getCenter = function (column, row) {
 	        var x = this.getColumnCenter(column);
 	        var y = this.getRowCenter(row);
 	        return new PIXI.Point(x, y);
@@ -37943,7 +37943,7 @@
 	var Graphics = PIXI.Graphics;
 	var Container = PIXI.Container;
 	var GameBoard_1 = __webpack_require__(181);
-	var Coin_1 = __webpack_require__(186);
+	var Coin_1 = __webpack_require__(183);
 	var VisibilityLevel;
 	(function (VisibilityLevel) {
 	    VisibilityLevel[VisibilityLevel["Low"] = 0.01] = "Low";
@@ -38031,111 +38031,13 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var Container = PIXI.Container;
-	var Player_1 = __webpack_require__(184);
-	var GameBoard_1 = __webpack_require__(181);
-	var SelectionPointer = (function () {
-	    function SelectionPointer(stripeIndex, isEmptySlotAvailable) {
-	        this.stripeIndex = stripeIndex;
-	        this.isEmptySlotAvailable = isEmptySlotAvailable;
-	        this.sprite_blue = this.buildSprite(stripeIndex, Player_1.Player.Blue);
-	        this.sprite_red = this.buildSprite(stripeIndex, Player_1.Player.Red);
-	        var stage = new Container();
-	        stage.addChild(this.sprite_blue);
-	        stage.addChild(this.sprite_red);
-	        this.stage = stage;
-	    }
-	    SelectionPointer.prototype.buildSprite = function (stripeIndex, pointerType) {
-	        var texture = pointerType == Player_1.Player.Blue
-	            ? PIXI.loader.resources["./app/images/pointer-blue.png"].texture
-	            : PIXI.loader.resources["./app/images/pointer-red.png"].texture;
-	        var sprite = new PIXI.Sprite(texture);
-	        sprite.width = 25;
-	        sprite.height = 20;
-	        sprite.anchor.set(0.5, 0.5);
-	        sprite.position.x = GameBoard_1.GameBoard.getColumnCenter(stripeIndex);
-	        sprite.position.y = SelectionPointer.POINTER_MARGIN_TOP;
-	        sprite.visible = false;
-	        return sprite;
-	    };
-	    SelectionPointer.prototype.show = function (player) {
-	        this.hide();
-	        if (!this.isEmptySlotAvailable())
-	            return;
-	        if (player == Player_1.Player.Blue)
-	            this.sprite_blue.visible = true;
-	        else
-	            this.sprite_red.visible = true;
-	    };
-	    SelectionPointer.prototype.hide = function () {
-	        this.sprite_blue.visible = false;
-	        this.sprite_red.visible = false;
-	    };
-	    SelectionPointer.prototype.getStage = function () {
-	        return this.stage;
-	    };
-	    return SelectionPointer;
-	}());
-	SelectionPointer.POINTER_MARGIN_TOP = 20;
-	exports.SelectionPointer = SelectionPointer;
-
-
-/***/ },
-/* 184 */
-/***/ function(module, exports) {
-
-	"use strict";
-	var Player;
-	(function (Player) {
-	    Player[Player["Blue"] = 0] = "Blue";
-	    Player[Player["Red"] = 1] = "Red";
-	})(Player = exports.Player || (exports.Player = {}));
-
-
-/***/ },
-/* 185 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	__webpack_require__(1);
-	var ScoreBoard = (function () {
-	    function ScoreBoard() {
-	    }
-	    ScoreBoard.prototype.getStage = function () {
-	        var stage = new PIXI.Container();
-	        var graphics = new PIXI.Graphics();
-	        graphics.beginFill(0xBEDB39, 0.01);
-	        graphics.drawRect(0, 0, 50, 50);
-	        graphics.endFill();
-	        graphics.interactive = true;
-	        graphics.on("mouseover", function () {
-	            console.log('success');
-	            graphics.scale.set(2, 2);
-	        });
-	        graphics.on("mouseout", function () {
-	            console.log('out');
-	            graphics.scale.set(1, 1);
-	        });
-	        stage.addChild(graphics);
-	        return stage;
-	    };
-	    return ScoreBoard;
-	}());
-	exports.ScoreBoard = ScoreBoard;
-
-
-/***/ },
-/* 186 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
 	var Player_1 = __webpack_require__(184);
 	var Coin = (function () {
 	    function Coin(player, finalPosition) {
 	        this.isAtFinalPosition = false;
 	        this.player = player;
 	        this.finalPosition = finalPosition;
-	        var texture = player == Player_1.Player.Blue
+	        var texture = player === Player_1.Player.Blue
 	            ? PIXI.loader.resources["./app/images/coin-blue.png"].texture
 	            : PIXI.loader.resources["./app/images/coin-red.png"].texture;
 	        var sprite = new PIXI.Sprite(texture);
@@ -38170,18 +38072,85 @@
 
 
 /***/ },
-/* 187 */
+/* 184 */
+/***/ function(module, exports) {
+
+	"use strict";
+	var Player;
+	(function (Player) {
+	    Player[Player["Blue"] = 0] = "Blue";
+	    Player[Player["Red"] = 1] = "Red";
+	})(Player = exports.Player || (exports.Player = {}));
+
+
+/***/ },
+/* 185 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var Container = PIXI.Container;
+	var Player_1 = __webpack_require__(184);
+	var GameBoard_1 = __webpack_require__(181);
+	var SelectionPointer = (function () {
+	    function SelectionPointer(stripeIndex, isEmptySlotAvailable) {
+	        this.stripeIndex = stripeIndex;
+	        this.isEmptySlotAvailable = isEmptySlotAvailable;
+	        this.sprite_blue = this.buildSprite(stripeIndex, Player_1.Player.Blue);
+	        this.sprite_red = this.buildSprite(stripeIndex, Player_1.Player.Red);
+	        var stage = new Container();
+	        stage.addChild(this.sprite_blue);
+	        stage.addChild(this.sprite_red);
+	        this.stage = stage;
+	    }
+	    SelectionPointer.prototype.buildSprite = function (stripeIndex, pointerType) {
+	        var texture = pointerType === Player_1.Player.Blue
+	            ? PIXI.loader.resources["./app/images/pointer-blue.png"].texture
+	            : PIXI.loader.resources["./app/images/pointer-red.png"].texture;
+	        var sprite = new PIXI.Sprite(texture);
+	        sprite.width = 25;
+	        sprite.height = 20;
+	        sprite.anchor.set(0.5, 0.5);
+	        sprite.position.x = GameBoard_1.GameBoard.getColumnCenter(stripeIndex);
+	        sprite.position.y = SelectionPointer.POINTER_MARGIN_TOP;
+	        sprite.visible = false;
+	        return sprite;
+	    };
+	    SelectionPointer.prototype.show = function (player) {
+	        this.hide();
+	        if (!this.isEmptySlotAvailable())
+	            return;
+	        if (player === Player_1.Player.Blue)
+	            this.sprite_blue.visible = true;
+	        else
+	            this.sprite_red.visible = true;
+	    };
+	    SelectionPointer.prototype.hide = function () {
+	        this.sprite_blue.visible = false;
+	        this.sprite_red.visible = false;
+	    };
+	    SelectionPointer.prototype.getStage = function () {
+	        return this.stage;
+	    };
+	    return SelectionPointer;
+	}());
+	SelectionPointer.POINTER_MARGIN_TOP = 20;
+	exports.SelectionPointer = SelectionPointer;
+
+
+/***/ },
+/* 186 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var GameBoard_1 = __webpack_require__(181);
 	var Player_1 = __webpack_require__(184);
+	var Debug_1 = __webpack_require__(189);
 	var CoinSlot;
 	(function (CoinSlot) {
 	    CoinSlot[CoinSlot["Empty"] = 0] = "Empty";
 	    CoinSlot[CoinSlot["Blue"] = 1] = "Blue";
 	    CoinSlot[CoinSlot["Red"] = 2] = "Red";
-	})(CoinSlot || (CoinSlot = {}));
+	})(CoinSlot = exports.CoinSlot || (exports.CoinSlot = {}));
 	var CoinsTracker = (function () {
 	    function CoinsTracker(boardDimensions) {
 	        this.allSlots = [];
@@ -38209,7 +38178,7 @@
 	            throw new Error('Cannot add coin because game ended wih a tie.');
 	        for (var rowIndex = 0; rowIndex < this.row_x_column[0]; rowIndex++) {
 	            if (this.allSlots[columnIndex][rowIndex] == CoinSlot.Empty) {
-	                var coinPosition = [rowIndex, columnIndex];
+	                var coinPosition = [columnIndex, rowIndex];
 	                this.allSlots[columnIndex][rowIndex] = this.playerToCoinSlot(player);
 	                this.checkIsWinningMove(coinPosition);
 	                return coinPosition;
@@ -38230,7 +38199,6 @@
 	            });
 	        });
 	        return !thereIsAtLeastOneEmptySlot;
-	        ;
 	    };
 	    CoinsTracker.prototype.isGameOver = function () {
 	        return this.isWin() || this.isTie();
@@ -38240,12 +38208,106 @@
 	            return CoinSlot.Blue;
 	        return CoinSlot.Red;
 	    };
-	    CoinsTracker.prototype.checkIsWinningMove = function (coinPosition) {
-	        console.log(this.allSlots[coinPosition[1]][coinPosition[0]]);
+	    CoinsTracker.prototype.checkIsWinningMove = function (column_x_row_coinPosition) {
+	        var activeCoinType = this.allSlots[column_x_row_coinPosition[0]][column_x_row_coinPosition[1]];
+	        console.log('ActiveCoin: ' + Debug_1.Debug.toString(activeCoinType));
+	        console.log('> top_right');
+	        var top_right = 0;
+	        for (var columnIndex = column_x_row_coinPosition[0] + 1, rowIndex = column_x_row_coinPosition[1] + 1; columnIndex < column_x_row_coinPosition[0] + 4
+	            && columnIndex < this.row_x_column[1]
+	            && rowIndex < column_x_row_coinPosition[1] + 4
+	            && rowIndex < this.row_x_column[0]; columnIndex++, rowIndex++) {
+	            if (this.allSlots[columnIndex][rowIndex] === activeCoinType) {
+	                top_right = top_right + 1;
+	                console.log(Debug_1.Debug.toString(this.allSlots[columnIndex][rowIndex]));
+	            }
+	            else
+	                break;
+	        }
+	        console.log('top_right: ' + top_right);
+	        console.log('> right');
+	        var right = 0;
+	        for (var columnIndex = column_x_row_coinPosition[0] + 1; columnIndex < column_x_row_coinPosition[0] + 4
+	            && columnIndex < this.row_x_column[1]; columnIndex++) {
+	            if (this.allSlots[columnIndex][column_x_row_coinPosition[1]] === activeCoinType) {
+	                right = right + 1;
+	                console.log(Debug_1.Debug.toString(this.allSlots[columnIndex][column_x_row_coinPosition[1]]));
+	            }
+	            else
+	                break;
+	        }
+	        console.log('right: ' + right);
+	        console.log('> down');
+	        var down = 0;
+	        for (var rowIndex = column_x_row_coinPosition[1] - 1; rowIndex > column_x_row_coinPosition[1] - 4 && rowIndex >= 0; rowIndex--) {
+	            if (this.allSlots[column_x_row_coinPosition[0]][rowIndex] === activeCoinType) {
+	                down = down + 1;
+	                console.log(Debug_1.Debug.toString(this.allSlots[column_x_row_coinPosition[0]][rowIndex]));
+	            }
+	            else
+	                break;
+	        }
+	        console.log('down: ' + down);
+	        console.log('------');
 	    };
 	    return CoinsTracker;
 	}());
 	exports.CoinsTracker = CoinsTracker;
+
+
+/***/ },
+/* 187 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	__webpack_require__(1);
+	var ScoreBoard = (function () {
+	    function ScoreBoard() {
+	    }
+	    ScoreBoard.prototype.getStage = function () {
+	        var stage = new PIXI.Container();
+	        var graphics = new PIXI.Graphics();
+	        graphics.beginFill(0xBEDB39, 0.01);
+	        graphics.drawRect(0, 0, 50, 50);
+	        graphics.endFill();
+	        graphics.interactive = true;
+	        graphics.on("mouseover", function () {
+	            console.log('success');
+	            graphics.scale.set(2, 2);
+	        });
+	        graphics.on("mouseout", function () {
+	            console.log('out');
+	            graphics.scale.set(1, 1);
+	        });
+	        stage.addChild(graphics);
+	        return stage;
+	    };
+	    return ScoreBoard;
+	}());
+	exports.ScoreBoard = ScoreBoard;
+
+
+/***/ },
+/* 188 */,
+/* 189 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var CoinsTracker_1 = __webpack_require__(186);
+	var Player_1 = __webpack_require__(184);
+	var Debug;
+	(function (Debug) {
+	    function toString(slot) {
+	        return slot == CoinsTracker_1.CoinSlot.Empty
+	            ? 'Empty' :
+	            (slot == CoinsTracker_1.CoinSlot.Blue ? 'blue' : 'red');
+	    }
+	    Debug.toString = toString;
+	    function toString_player(player) {
+	        return player === Player_1.Player.Blue ? 'Blue' : 'Red';
+	    }
+	    Debug.toString_player = toString_player;
+	})(Debug = exports.Debug || (exports.Debug = {}));
 
 
 /***/ }

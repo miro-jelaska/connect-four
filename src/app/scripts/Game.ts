@@ -18,10 +18,10 @@ export class Game {
         this.scoreBoard = new ScoreBoard();
     }
 
-    public update():void {
+    public update(): void {
         this.gameBoard.update();
     }
-    public render():void{
+    public render(): void {
         let rootStage = new PIXI.Container();
         ([
             this.gameBoard,
