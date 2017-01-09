@@ -4,7 +4,7 @@ Connect Four game created using Pixi.js and TypeScript.
 <img src="readme-resources/screenshot.png" alt="Prototype" width="400"/>
 
 ## Design
-Vector assets can be found in Adobe Illustrator file at  [readme-resources/Connect4-assets](https://github.com/MiroslavJelaska/connect-four/blob/master/readme-resources/Connect4-assets.ai)
+Vector assets can be found in Adobe Illustrator file at  [readme-resources/Connect4-assets.ai](https://github.com/MiroslavJelaska/connect-four/blob/master/readme-resources/Connect4-assets.ai)
 
 ### Color scheme
 * ![#FE5C2C](http://placehold.it/15/FE5C2C/000000?text=+) `#FE5C2C` (LightRed)
