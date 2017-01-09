@@ -3,6 +3,7 @@ import {ScoreBoard} from "./components/ui/ScoreBoard";
 import {RenderableElement} from "./utilities/RenderableElement";
 import {Player} from "./utilities/Player";
 import {ActivityBar} from "./components/ui/ActivityBar";
+import {Debug} from "./debug/Debug";
 export class Game {
     private readonly renderer: PIXI.CanvasRenderer | PIXI.WebGLRenderer;
 
@@ -10,8 +11,8 @@ export class Game {
     private readonly scoreBoard: ScoreBoard;
     private readonly activityBar: ActivityBar;
 
-    private playerWhoIsActiveFirst = Player.Blue;
-    private activePlayer = this.playerWhoIsActiveFirst;
+    private playerWhoIsActiveFirst: Player = Player.Blue;
+    private activePlayer: Player = this.playerWhoIsActiveFirst;
 
     constructor(rendered: PIXI.CanvasRenderer | PIXI.WebGLRenderer){
         this.renderer = rendered;
@@ -47,10 +48,19 @@ export class Game {
     }
 
     private onActivePlayerChange(player: Player): void {
+        this.activePlayer = player;
         this.activityBar.onActivePlayerChange(player);
     }
 
     private onNewGameRequest(): void {
-        console.log('Start new game.');
+        let playerThatWonLastGame = this.activePlayer;
+        if(playerThatWonLastGame === Player.Blue)
+            this.activePlayer = Player.Red;
+        else
+            this.activePlayer = Player.Blue;
+        console.log(2, Debug.toString_player(this.activePlayer));
+
+        this.activityBar.onActivePlayerChange(this.activePlayer);
+        this.gameBoard.startNewGame(this.activePlayer);
     }
 }

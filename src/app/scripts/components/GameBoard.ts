@@ -25,11 +25,11 @@ export class GameBoard implements RenderableElement, UpdateableElement{
     private readonly coinsTracker: CoinsTracker;
     private readonly selectionStripes: SelectionStripe[] = [];
     private readonly selectionPointers: SelectionPointer[] = [];
-    private readonly allCoins: Coin[] = [];
-
-    private activePlayer: Player;
     private readonly onGameOver: (player?:Player) => void;
     private readonly onActivePlayerChange: (player:Player) => void;
+
+    private allCoins: Coin[] = [];
+    private activePlayer: Player;
 
     constructor(activePlayer: Player, onGameOver: (player?:Player) => void, onActivePlayerChange: (player:Player) => void){
         this.activePlayer = activePlayer;
@@ -101,13 +101,18 @@ export class GameBoard implements RenderableElement, UpdateableElement{
         }
     }
 
-
     private switchActivePlayer(): void {
         this.activePlayer =
             this.activePlayer === Player.Blue
             ? Player.Red
             : Player.Blue;
         this.onActivePlayerChange(this.activePlayer);
+    }
+
+    public startNewGame(player: Player): void {
+        this.coinsTracker.reset();
+        this.allCoins = [];
+        this.activePlayer = player;
     }
 
     public update(): void {

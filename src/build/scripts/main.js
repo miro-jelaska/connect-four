@@ -37806,6 +37806,7 @@
 	var ScoreBoard_1 = __webpack_require__(189);
 	var Player_1 = __webpack_require__(184);
 	var ActivityBar_1 = __webpack_require__(191);
+	var Debug_1 = __webpack_require__(187);
 	var Game = (function () {
 	    function Game(rendered) {
 	        var _this = this;
@@ -37837,10 +37838,18 @@
 	        this.activityBar.onGameOver();
 	    };
 	    Game.prototype.onActivePlayerChange = function (player) {
+	        this.activePlayer = player;
 	        this.activityBar.onActivePlayerChange(player);
 	    };
 	    Game.prototype.onNewGameRequest = function () {
-	        console.log('Start new game.');
+	        var playerThatWonLastGame = this.activePlayer;
+	        if (playerThatWonLastGame === Player_1.Player.Blue)
+	            this.activePlayer = Player_1.Player.Red;
+	        else
+	            this.activePlayer = Player_1.Player.Blue;
+	        console.log(2, Debug_1.Debug.toString_player(this.activePlayer));
+	        this.activityBar.onActivePlayerChange(this.activePlayer);
+	        this.gameBoard.startNewGame(this.activePlayer);
 	    };
 	    return Game;
 	}());
@@ -37936,6 +37945,11 @@
 	                ? Player_1.Player.Red
 	                : Player_1.Player.Blue;
 	        this.onActivePlayerChange(this.activePlayer);
+	    };
+	    GameBoard.prototype.startNewGame = function (player) {
+	        this.coinsTracker.reset();
+	        this.allCoins = [];
+	        this.activePlayer = player;
 	    };
 	    GameBoard.prototype.update = function () {
 	        this.allCoins.forEach(function (coin) { return coin.update(); });
@@ -38222,6 +38236,10 @@
 	        if (boardDimensions[0] < 0 || boardDimensions[1] < 0)
 	            throw new Error('Board dimensions must be positive numbers.');
 	        this.row_x_column = boardDimensions;
+	        this.initializeSlots();
+	    }
+	    CoinsTracker.prototype.initializeSlots = function () {
+	        this.allSlots = [];
 	        for (var columnIndex = 0; columnIndex < GameBoard_1.GameBoard.ROWxCOLUMN[1]; columnIndex++) {
 	            var wholeColumn = [];
 	            for (var rowIndex = 0; rowIndex < GameBoard_1.GameBoard.ROWxCOLUMN[0]; rowIndex++) {
@@ -38229,7 +38247,12 @@
 	            }
 	            this.allSlots.push(wholeColumn);
 	        }
-	    }
+	    };
+	    CoinsTracker.prototype.reset = function () {
+	        this.initializeSlots();
+	        this.winner = null;
+	        this.winnerCoinPositions = [];
+	    };
 	    CoinsTracker.prototype.isEmptySlotAvailable = function (columnIndex) {
 	        return this.allSlots[columnIndex].some(function (slot) { return slot == CoinSlot.Empty; });
 	    };
@@ -38378,7 +38401,28 @@
 
 
 /***/ },
-/* 187 */,
+/* 187 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var CoinsTracker_1 = __webpack_require__(186);
+	var Player_1 = __webpack_require__(184);
+	var Debug;
+	(function (Debug) {
+	    function toString_coinSlot(slot) {
+	        return slot == CoinsTracker_1.CoinSlot.Empty
+	            ? 'Empty' :
+	            (slot == CoinsTracker_1.CoinSlot.Blue ? 'blue' : 'red');
+	    }
+	    Debug.toString_coinSlot = toString_coinSlot;
+	    function toString_player(player) {
+	        return player === Player_1.Player.Blue ? 'Blue' : 'Red';
+	    }
+	    Debug.toString_player = toString_player;
+	})(Debug = exports.Debug || (exports.Debug = {}));
+
+
+/***/ },
 /* 188 */,
 /* 189 */
 /***/ function(module, exports, __webpack_require__) {

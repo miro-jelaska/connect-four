@@ -10,16 +10,19 @@ export enum CoinSlot {
 
 export class CoinsTracker {
     private readonly row_x_column: [number, number];
-    private readonly allSlots: CoinSlot[][] = [];
 
+    private allSlots: CoinSlot[][] = [];
     private winner?: Player = null;
     private winnerCoinPositions: Array<[number, number]> = [];
 
     constructor(boardDimensions: [number, number]){
         if(boardDimensions[0] < 0 || boardDimensions[1] < 0)
             throw new Error('Board dimensions must be positive numbers.');
-
         this.row_x_column = boardDimensions;
+        this.initializeSlots();
+    }
+    private initializeSlots(): void {
+        this.allSlots = [];
         for(var columnIndex = 0; columnIndex < GameBoard.ROWxCOLUMN[1]; columnIndex++) {
             let wholeColumn = [];
             for(var rowIndex = 0; rowIndex < GameBoard.ROWxCOLUMN[0]; rowIndex++){
@@ -27,6 +30,11 @@ export class CoinsTracker {
             }
             this.allSlots.push(wholeColumn);
         }
+    }
+    public reset(): void {
+        this.initializeSlots();
+        this.winner = null;
+        this.winnerCoinPositions = [];
     }
 
     public isEmptySlotAvailable(columnIndex: number): boolean {
@@ -74,6 +82,7 @@ export class CoinsTracker {
         return !thereIsAtLeastOneEmptySlot;
     }
 
+
     public isGameOver(): boolean {
         return this.isWin() || this.isTie();
     }
@@ -88,6 +97,7 @@ export class CoinsTracker {
             return Player.Blue;
         return Player.Red;
     }
+
 
     private checkIsWinningMove(column_x_row_coinPosition: [number, number]): void {
         let activeCoinType: CoinSlot = this.allSlots[column_x_row_coinPosition[0]][column_x_row_coinPosition[1]];
