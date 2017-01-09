@@ -24,13 +24,13 @@ export class GameBoard implements RenderableElement, UpdateableElement{
     private readonly coinsTracker: CoinsTracker;
     private readonly selectionStripes: SelectionStripe[] = [];
     private readonly selectionPointers: SelectionPointer[] = [];
-    private readonly onGameOver: (player?:Player) => void;
-    private readonly onActivePlayerChange: (player:Player) => void;
+    private readonly onGameOver: (player?: Player) => void;
+    private readonly onActivePlayerChange: (player: Player) => void;
 
     private allCoins: Coin[] = [];
     private activePlayer: Player;
 
-    constructor(activePlayer: Player, onGameOver: (player?:Player) => void, onActivePlayerChange: (player:Player) => void){
+    constructor(activePlayer: Player, onGameOver: (player?: Player) => void, onActivePlayerChange: (player: Player) => void){
         this.activePlayer = activePlayer;
         this.onGameOver = onGameOver;
         this.onActivePlayerChange = onActivePlayerChange;
@@ -118,7 +118,7 @@ export class GameBoard implements RenderableElement, UpdateableElement{
         this.allCoins.forEach(coin => coin.update());
     }
 
-    public getStage():PIXI.Container {
+    public getStage(): PIXI.Container {
         let stage = new PIXI.Container();
 
         this.allCoins.forEach(coin => stage.addChild(coin.getStage()));
