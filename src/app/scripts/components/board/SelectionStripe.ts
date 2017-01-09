@@ -1,4 +1,4 @@
-import {RenderableElement} from "../utilities/RenderableElement";
+import {RenderableElement} from "../../utilities/RenderableElement";
 import Graphics = PIXI.Graphics;
 import Rectangle = PIXI.Rectangle;
 import Sprite = PIXI.Sprite;

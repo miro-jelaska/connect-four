@@ -37803,9 +37803,9 @@
 
 	"use strict";
 	var GameBoard_1 = __webpack_require__(181);
-	var ScoreBoard_1 = __webpack_require__(189);
+	var ScoreBoard_1 = __webpack_require__(187);
 	var Player_1 = __webpack_require__(184);
-	var ActivityBar_1 = __webpack_require__(191);
+	var ActivityBar_1 = __webpack_require__(189);
 	var Game = (function () {
 	    function Game(rendered) {
 	        var _this = this;
@@ -38401,16 +38401,14 @@
 
 
 /***/ },
-/* 187 */,
-/* 188 */,
-/* 189 */
+/* 187 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	__webpack_require__(1);
 	var GameBoard_1 = __webpack_require__(181);
 	var Settings_1 = __webpack_require__(179);
-	var ColorScheme_1 = __webpack_require__(190);
+	var ColorScheme_1 = __webpack_require__(188);
 	var Player_1 = __webpack_require__(184);
 	var ScoreBoard = (function () {
 	    function ScoreBoard() {
@@ -38481,7 +38479,7 @@
 
 
 /***/ },
-/* 190 */
+/* 188 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -38498,13 +38496,13 @@
 
 
 /***/ },
-/* 191 */
+/* 189 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var Player_1 = __webpack_require__(184);
 	var GameBoard_1 = __webpack_require__(181);
-	var ScoreBoard_1 = __webpack_require__(189);
+	var ScoreBoard_1 = __webpack_require__(187);
 	var ActivityBar = (function () {
 	    function ActivityBar(initialTurn, onNewGameRequest) {
 	        var _this = this;

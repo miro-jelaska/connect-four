@@ -1,10 +1,10 @@
-import {RenderableElement} from "../utilities/RenderableElement";
+import {RenderableElement} from "../../utilities/RenderableElement";
 import Graphics = PIXI.Graphics;
 import Rectangle = PIXI.Rectangle;
 import Sprite = PIXI.Sprite;
 import Container = PIXI.Container;
 import Texture = PIXI.Texture;
-import {Player} from "../utilities/Player";
+import {Player} from "../../utilities/Player";
 import {GameBoard} from "./GameBoard";
 
 export class SelectionPointer implements RenderableElement {

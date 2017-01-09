@@ -1,6 +1,6 @@
 import {RenderableElement} from "../../utilities/RenderableElement";
 import {Player} from "../../utilities/Player";
-import {GameBoard} from "../GameBoard";
+import {GameBoard} from "../board/GameBoard";
 import {ScoreBoard} from "./ScoreBoard";
 
 export class ActivityBar implements RenderableElement {

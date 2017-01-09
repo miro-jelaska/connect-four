@@ -1,4 +1,4 @@
-import {GameBoard} from "./components/GameBoard";
+import {GameBoard} from "./components/board/GameBoard";
 import {ScoreBoard} from "./components/ui/ScoreBoard";
 import {RenderableElement} from "./utilities/RenderableElement";
 import {Player} from "./utilities/Player";

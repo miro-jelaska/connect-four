@@ -1,4 +1,4 @@
-import {GameBoard} from "../components/GameBoard";
+import {GameBoard} from "../components/board/GameBoard";
 import {Player} from "./Player";
 
 export enum CoinSlot {

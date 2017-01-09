@@ -1,6 +1,6 @@
-import {RenderableElement} from "../utilities/RenderableElement";
-import {Player} from "../utilities/Player";
-import {UpdateableElement} from "../utilities/UpdateableElement";
+import {RenderableElement} from "../../utilities/RenderableElement";
+import {Player} from "../../utilities/Player";
+import {UpdateableElement} from "../../utilities/UpdateableElement";
 import Sprite = PIXI.Sprite;
 import Container = PIXI.Container;
 

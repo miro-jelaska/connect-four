@@ -5,12 +5,12 @@ import DisplayObject = PIXI.DisplayObject;
 import Container = PIXI.Container;
 import Graphics = PIXI.Graphics;
 import {SelectionStripe} from "./SelectionStripe";
-import {RenderableElement} from "../utilities/RenderableElement";
+import {RenderableElement} from "../../utilities/RenderableElement";
 import {SelectionPointer} from "./SelectionPointer";
-import {Player} from "../utilities/Player";
+import {Player} from "../../utilities/Player";
 import {Coin} from "./Coin";
-import {UpdateableElement} from "../utilities/UpdateableElement";
-import {CoinsTracker} from "../utilities/CoinsTracker";
+import {UpdateableElement} from "../../utilities/UpdateableElement";
+import {CoinsTracker} from "../../utilities/CoinsTracker";
 
 export class GameBoard implements RenderableElement, UpdateableElement{
     public static readonly ROWxCOLUMN:[number, number] = [6, 7];

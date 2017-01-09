@@ -1,6 +1,6 @@
 import 'pixi.js';
 import {RenderableElement} from "../../utilities/RenderableElement";
-import {GameBoard} from "../GameBoard";
+import {GameBoard} from "../board/GameBoard";
 import {Setting} from "../../Settings";
 import {ColorScheme} from "../../utilities/ColorScheme";
 import {Player} from "../../utilities/Player";
