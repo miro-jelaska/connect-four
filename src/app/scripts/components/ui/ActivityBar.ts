@@ -1,8 +1,8 @@
 import {RenderableElement} from "../../utilities/RenderableElement";
 import {Player} from "../../utilities/Player";
-import {Setting} from "../../Settings";
 import {GameBoard} from "../GameBoard";
 import {ScoreBoard} from "./ScoreBoard";
+
 export class ActivityBar implements RenderableElement {
     public static readonly CANVAS_MARGIN_TOP = GameBoard.BOARD_MARGIN_TOP + GameBoard.BOARD_HEIGHT + ScoreBoard.HEIGHT;
     private readonly onNewGameRequest: () => void;

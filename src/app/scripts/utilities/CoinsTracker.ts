@@ -1,6 +1,5 @@
 import {GameBoard} from "../components/GameBoard";
 import {Player} from "./Player";
-import {Debug} from "../debug/Debug";
 
 export enum CoinSlot {
     Empty,

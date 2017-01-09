@@ -11,7 +11,6 @@ import {Player} from "../utilities/Player";
 import {Coin} from "./Coin";
 import {UpdateableElement} from "../utilities/UpdateableElement";
 import {CoinsTracker} from "../utilities/CoinsTracker";
-import {Debug} from "../debug/Debug";
 
 export class GameBoard implements RenderableElement, UpdateableElement{
     public static readonly ROWxCOLUMN:[number, number] = [6, 7];

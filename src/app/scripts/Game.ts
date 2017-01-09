@@ -3,7 +3,7 @@ import {ScoreBoard} from "./components/ui/ScoreBoard";
 import {RenderableElement} from "./utilities/RenderableElement";
 import {Player} from "./utilities/Player";
 import {ActivityBar} from "./components/ui/ActivityBar";
-import {Debug} from "./debug/Debug";
+
 export class Game {
     private readonly renderer: PIXI.CanvasRenderer | PIXI.WebGLRenderer;
 
@@ -40,6 +40,7 @@ export class Game {
         this.renderer.render(rootStage);
     }
 
+
     private onGameOver(playerThatWon?: Player): void {
         if(playerThatWon !== null){
             this.scoreBoard.playerWon(playerThatWon);
@@ -58,7 +59,6 @@ export class Game {
             this.activePlayer = Player.Red;
         else
             this.activePlayer = Player.Blue;
-        console.log(2, Debug.toString_player(this.activePlayer));
 
         this.activityBar.onActivePlayerChange(this.activePlayer);
         this.gameBoard.startNewGame(this.activePlayer);

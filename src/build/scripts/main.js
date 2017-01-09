@@ -37806,7 +37806,6 @@
 	var ScoreBoard_1 = __webpack_require__(189);
 	var Player_1 = __webpack_require__(184);
 	var ActivityBar_1 = __webpack_require__(191);
-	var Debug_1 = __webpack_require__(187);
 	var Game = (function () {
 	    function Game(rendered) {
 	        var _this = this;
@@ -37847,7 +37846,6 @@
 	            this.activePlayer = Player_1.Player.Red;
 	        else
 	            this.activePlayer = Player_1.Player.Blue;
-	        console.log(2, Debug_1.Debug.toString_player(this.activePlayer));
 	        this.activityBar.onActivePlayerChange(this.activePlayer);
 	        this.gameBoard.startNewGame(this.activePlayer);
 	    };
@@ -38185,8 +38183,8 @@
 	            ? PIXI.loader.resources["./app/images/pointer-blue.png"].texture
 	            : PIXI.loader.resources["./app/images/pointer-red.png"].texture;
 	        var sprite = new PIXI.Sprite(texture);
-	        sprite.width = 25;
-	        sprite.height = 20;
+	        sprite.width = SelectionPointer.WIDTH;
+	        sprite.height = SelectionPointer.HEIGHT;
 	        sprite.anchor.set(0.5, 0.5);
 	        sprite.position.x = GameBoard_1.GameBoard.getColumnCenter(stripeIndex);
 	        sprite.position.y = SelectionPointer.POINTER_MARGIN_TOP;
@@ -38212,6 +38210,8 @@
 	    return SelectionPointer;
 	}());
 	SelectionPointer.POINTER_MARGIN_TOP = 20;
+	SelectionPointer.WIDTH = 25;
+	SelectionPointer.HEIGHT = 20;
 	exports.SelectionPointer = SelectionPointer;
 
 
@@ -38401,28 +38401,7 @@
 
 
 /***/ },
-/* 187 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var CoinsTracker_1 = __webpack_require__(186);
-	var Player_1 = __webpack_require__(184);
-	var Debug;
-	(function (Debug) {
-	    function toString_coinSlot(slot) {
-	        return slot == CoinsTracker_1.CoinSlot.Empty
-	            ? 'Empty' :
-	            (slot == CoinsTracker_1.CoinSlot.Blue ? 'blue' : 'red');
-	    }
-	    Debug.toString_coinSlot = toString_coinSlot;
-	    function toString_player(player) {
-	        return player === Player_1.Player.Blue ? 'Blue' : 'Red';
-	    }
-	    Debug.toString_player = toString_player;
-	})(Debug = exports.Debug || (exports.Debug = {}));
-
-
-/***/ },
+/* 187 */,
 /* 188 */,
 /* 189 */
 /***/ function(module, exports, __webpack_require__) {

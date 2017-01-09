@@ -9,6 +9,8 @@ import {GameBoard} from "./GameBoard";
 
 export class SelectionPointer implements RenderableElement {
     public static readonly POINTER_MARGIN_TOP = 20;
+    public static readonly WIDTH = 25;
+    public static readonly HEIGHT = 20;
 
     public readonly stripeIndex: number;
 
@@ -34,8 +36,8 @@ export class SelectionPointer implements RenderableElement {
             ? PIXI.loader.resources["./app/images/pointer-blue.png"].texture
             : PIXI.loader.resources["./app/images/pointer-red.png"].texture;
         let sprite = new PIXI.Sprite(texture);
-        sprite.width = 25;
-        sprite.height = 20;
+        sprite.width = SelectionPointer.WIDTH;
+        sprite.height = SelectionPointer.HEIGHT;
         sprite.anchor.set(0.5, 0.5);
         sprite.position.x = GameBoard.getColumnCenter(stripeIndex);
         sprite.position.y = SelectionPointer.POINTER_MARGIN_TOP;
