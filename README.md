@@ -1,7 +1,7 @@
 # Connect 4
 Connect Four game created using Pixi.js and TypeScript.
 
-<img src="readme-resources/screenshot.png" alt="Prototype" width="400"/>
+[![Preview of Connect 4 game (TypeScript & Pixi.js)](readme-resources/screenshot-youtube.png)](https://youtu.be/J5EsdSgt2G0 "Preview of Connect 4 game (TypeScript & Pixi.js)")
 
 ⏱ How much time did it took me? 3 days (which is also partially visible in commit history). This includes software development as well as creating gamplay concept, prototypes and, finally, game art. I had no practical experience with TypeScript nor Pixi.js prior to this project. 
 
