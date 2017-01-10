@@ -3,6 +3,8 @@ Connect Four game created using Pixi.js and TypeScript.
 
 <img src="readme-resources/screenshot.png" alt="Prototype" width="400"/>
 
+⏱ How much time did it took me? 3 days (which is also partially visible in commit history) without any prior practical experience with TypeScript nor Pixi.js. This time includes software development as well as creating gamplay concept, prototypes and, finally, game art.
+
 # Technical details
 ## How to build and run?
 To build the project use **webpack** and then use some **static server** to serve the web.
