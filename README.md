@@ -55,10 +55,10 @@ Here is the whole process for those who got lost or those who are just starting 
 Vector assets can be found in Adobe Illustrator file at  [readme-resources/Connect4-assets.ai](https://github.com/MiroslavJelaska/connect-four/blob/master/readme-resources/Connect4-assets.ai)
 
 ### Color scheme
-* ![#FE5C2C](http://placehold.it/15/FE5C2C/000000?text=+) `#FE5C2C` (LightRed)
-* ![#E0331D](http://placehold.it/15/E0331D/000000?text=+) `#E0331D` (DarkRed)
-* ![#3DBAE3](http://placehold.it/15/3DBAE3/000000?text=+) `#3DBAE3` (LightBlue)
-* ![#0D87C9](http://placehold.it/15/0D87C9/000000?text=+) `#0D87C9` (DarkBlue)
-* ![#74675A](http://placehold.it/15/74675A/000000?text=+) `#74675A` (Brown)
-* ![#FFB014](http://placehold.it/15/FFB014/000000?text=+) `#FFB014` (Yellow)
-* ![#F1F2F2](http://placehold.it/15/F1F2F2/000000?text=+) `#F1F2F2` (LightGray)
+* ![#FE5C2C](readme-resources/color-15x15-lightRed.png) `#FE5C2C` (LightRed)
+* ![#E0331D](readme-resources/color-15x15-darkRed.png) `#E0331D` (DarkRed)
+* ![#3DBAE3](readme-resources/color-15x15-lightBlue.png) `#3DBAE3` (LightBlue)
+* ![#0D87C9](readme-resources/color-15x15-darkBlue.png) `#0D87C9` (DarkBlue)
+* ![#74675A](readme-resources/color-15x15-brown.png) `#74675A` (Brown)
+* ![#FFB014](readme-resources/color-15x15-yellow.png) `#FFB014` (Yellow)
+* ![#F1F2F2](readme-resources/color-15x15-lightGray.png) `#F1F2F2` (LightGray)
