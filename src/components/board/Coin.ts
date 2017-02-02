@@ -28,8 +28,8 @@ export class Coin implements RenderableElement, UpdateableElement{
         this.finalPosition = finalPosition;
         let texture =
             player === Player.Blue
-            ? PIXI.loader.resources["./app/images/coin-blue.png"].texture
-            : PIXI.loader.resources["./app/images/coin-red.png"].texture;
+            ? PIXI.loader.resources["./images/coin-blue.png"].texture
+            : PIXI.loader.resources["./images/coin-red.png"].texture;
         let sprite = new PIXI.Sprite(texture);
 
         // HACK: Added 2 to width and height to fill empty space between game board and coin.

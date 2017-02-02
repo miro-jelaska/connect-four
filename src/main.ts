@@ -8,14 +8,14 @@ import IRendererOptions = PIXI.IRendererOptions;
 function onLoad(): void {
     PIXI.loader
         .add([
-            "./app/images/board.png",
-            "./app/images/coin-red.png",
-            "./app/images/coin-blue.png",
-            "./app/images/new-game.png",
-            "./app/images/pointer-blue.png",
-            "./app/images/pointer-red.png",
-            "./app/images/turn-blue.png",
-            "./app/images/turn-red.png"
+            "./images/board.png",
+            "./images/coin-red.png",
+            "./images/coin-blue.png",
+            "./images/new-game.png",
+            "./images/pointer-blue.png",
+            "./images/pointer-red.png",
+            "./images/turn-blue.png",
+            "./images/turn-red.png"
         ])
         .load(setup);
 

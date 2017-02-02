@@ -33,8 +33,8 @@ export class SelectionPointer implements RenderableElement {
     private buildSprite(stripeIndex: number, pointerType: Player): PIXI.Sprite {
         let texture =
             pointerType === Player.Blue
-            ? PIXI.loader.resources["./app/images/pointer-blue.png"].texture
-            : PIXI.loader.resources["./app/images/pointer-red.png"].texture;
+            ? PIXI.loader.resources["./images/pointer-blue.png"].texture
+            : PIXI.loader.resources["./images/pointer-red.png"].texture;
         let sprite = new PIXI.Sprite(texture);
         sprite.width = SelectionPointer.WIDTH;
         sprite.height = SelectionPointer.HEIGHT;

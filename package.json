@@ -2,7 +2,7 @@
   "name": "connect-four",
   "version": "1.0.0",
   "description": "Connect Four game created using TypeScript and PixiJS",
-  "main": "index.html",
+  "main": "./index.html",
   "scripts": {
     "build": "webpack"
   },

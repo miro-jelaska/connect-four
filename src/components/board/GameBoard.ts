@@ -49,7 +49,7 @@ export class GameBoard implements RenderableElement, UpdateableElement{
         this.boardSprite = this.buildBoardSprite();
     }
     private buildBoardSprite(): PIXI.Sprite {
-        let texture = PIXI.loader.resources["./app/images/board.png"].texture;
+        let texture = PIXI.loader.resources["./images/board.png"].texture;
         let sprite = new PIXI.Sprite(texture);
         sprite.width = GameBoard.BOARD_WIDTH;
         sprite.height = GameBoard.BOARD_HEIGHT;

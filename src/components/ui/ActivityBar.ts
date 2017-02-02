@@ -17,21 +17,21 @@ export class ActivityBar implements RenderableElement {
 
         this.bluePlayerTurnStatus = new PIXI.Container();
         let bluePlayerRTurnSprite = new PIXI.Sprite(
-            PIXI.loader.resources["./app/images/turn-blue.png"].texture
+            PIXI.loader.resources["./images/turn-blue.png"].texture
         );
         bluePlayerRTurnSprite.position.y = ActivityBar.CANVAS_MARGIN_TOP;
         this.bluePlayerTurnStatus.addChild(bluePlayerRTurnSprite);
 
         this.redPlayerTurnStatus = new PIXI.Container();
         let redPlayerRTurnSprite = new PIXI.Sprite(
-            PIXI.loader.resources["./app/images/turn-red.png"].texture
+            PIXI.loader.resources["./images/turn-red.png"].texture
         );
         redPlayerRTurnSprite.position.y = ActivityBar.CANVAS_MARGIN_TOP;
         this.redPlayerTurnStatus.addChild(redPlayerRTurnSprite);
 
         this.newGameButton = new PIXI.Container();
         let newGameButtonSprite = new PIXI.Sprite(
-            PIXI.loader.resources["./app/images/new-game.png"].texture
+            PIXI.loader.resources["./images/new-game.png"].texture
         );
         newGameButtonSprite.position.y = ActivityBar.CANVAS_MARGIN_TOP;
         newGameButtonSprite.interactive = true;
