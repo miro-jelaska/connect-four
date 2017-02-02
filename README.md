@@ -1,3 +1,5 @@
+[![NSP Status](https://nodesecurity.io/orgs/mjelaska/projects/0c50fea3-e688-486d-b263-7bd89d01dda2/badge)](https://nodesecurity.io/orgs/mjelaska/projects/0c50fea3-e688-486d-b263-7bd89d01dda2)
+[![dependencies Status](https://david-dm.org/MiroslavJelaska/connect-four/status.svg)](https://david-dm.org/MiroslavJelaska/connect-four)
 # Connect 4
 Connect Four game created using Pixi.js and TypeScript.
 
