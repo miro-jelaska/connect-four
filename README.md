@@ -19,7 +19,7 @@ To build the project use **webpack** and then use some **static server** to serv
 Here is the whole process for those who got lost or those who are just starting out.
 
 1. (Prerequirements) Assuming that you have installed and configured [node.js](https://docs.npmjs.com/getting-started/installing-node) and [git](https://git-scm.com/) on your machine. And that you have cloned this repository.
-2. Open your favorite shell and change directory to _src_ directory found at _./connect-four/src_
+2. Open your favorite shell and change directory to _root_ at _./connect-four_
 3. Install all npm modules (listed as dependencies in package.json).
 
    ```
@@ -41,7 +41,7 @@ Here is the whole process for those who got lost or those who are just starting 
     ./build/scripts/main.js  1.23 MB       0  [emitted]  main
         + 190 hidden modules
     ```
-5. Install and use some static web server. E.g. install [Superstatic](https://github.com/firebase/superstatic), run superstatic at _./connect-four/src_. Shell output may look something like this
+5. Install and use some static web server. E.g. install [Superstatic](https://github.com/firebase/superstatic), run superstatic at _./connect-four_. Shell output may look something like this
    
    ```
    Superstatic started.
